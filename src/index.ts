@@ -1,27 +1,15 @@
 import StringSchema from './string'
 import NumericSchema from './numeric'
-import BooleanSchema from './boolean'
-import NullSchema from './null'
 import ArraySchema from './array'
 import ObjectSchema from './object'
-import EnumSchema, { Enumerable } from './enum'
-import ConstSchema, { Constantable } from './const'
-import CombiningSchema from './combining'
-import AnySchema from './any'
-import BaseSchema from './base'
+import BaseSchema, { Enumerable } from './base'
 
 export type Schema =
-  StringSchema
-  | BaseSchema
+  BaseSchema
+  | StringSchema
   | NumericSchema
-  | BooleanSchema
-  | NullSchema
   | ArraySchema
   | ObjectSchema
-  | EnumSchema
-  | ConstSchema
-  | CombiningSchema
-  | AnySchema
 
 export default {
   string: (): StringSchema => {
@@ -36,19 +24,19 @@ export default {
     return new NumericSchema('integer')
   },
 
-  boolean: (): BooleanSchema => {
-    return new BooleanSchema()
+  boolean: () => {
+    return new BaseSchema().as('boolean')
   },
 
-  null: (): NullSchema => {
-    return new NullSchema()
+  null: () => {
+    return new BaseSchema().as('null')
   },
 
   array: (): ArraySchema => {
     return new ArraySchema()
   },
 
-  list: <T extends Schema>(items: T) => {
+  list: <T extends BaseSchema>(items: T) => {
     return new ArraySchema().items(items)
   },
 
@@ -56,63 +44,73 @@ export default {
     return new ObjectSchema()
   },
 
-  shape: <T extends Record<string, Schema>>(props: T) => {
-    return ObjectSchema.shape(props)
+  shape: <T extends Record<string, BaseSchema<any, boolean>>>(props: T) => {
+    const res = new ObjectSchema<{ [K in keyof T]: T[K]['shape'] }>().additionalProperties(false)
+    for (const prop in props) res.prop(prop, props[prop])
+    return res
   },
 
   enum: <T extends Enumerable>(...args: T[]) => {
-    return new EnumSchema(...args)
+    return new BaseSchema<T>().enum(...args)
   },
 
-  const: <T extends Constantable>(value: T) => {
-    return new ConstSchema(value)
+  const: <T extends Enumerable>(value: T) => {
+    return new BaseSchema<T>().const(value)
   },
 
-  anyOf: <T extends Schema[]>(...schemas: T): CombiningSchema<T[number]['type']> => {
-    return new CombiningSchema('anyOf', ...schemas)
+  anyOf: <T extends BaseSchema[]>(...schemas: T) => {
+    return new BaseSchema<T[number]['type']>().anyOf(...schemas)
   },
 
-  allOf: <T extends Schema[]>(...schemas: T): CombiningSchema<T[number]['type']> => {
-    return new CombiningSchema('allOf', ...schemas)
+  allOf: <T extends BaseSchema[]>(...schemas: T) => {
+    return new BaseSchema<T[number]['type']>().allOf(...schemas)
   },
 
-  oneOf: <T extends Schema[]>(...schemas: T): CombiningSchema<T[number]['type']> => {
-    return new CombiningSchema('oneOf', ...schemas)
+  oneOf: <T extends BaseSchema[]>(...schemas: T) => {
+    return new BaseSchema<T[number]['type']>().oneOf(...schemas)
   },
 
-  not: <T extends Schema[]>(...schemas: T): CombiningSchema<any> => {
-    return new CombiningSchema('not', ...schemas)
+  not: <T extends BaseSchema[]>(...schemas: T) => {
+    return new BaseSchema<T[number]['type']>().not(...schemas)
   },
 
-  any: (): AnySchema => {
-    return new AnySchema()
+  any: () => {
+    return new BaseSchema()
   },
 
   raw: (fragment: object) => {
-    return new AnySchema().raw(fragment)
+    return new BaseSchema().raw(fragment)
   },
 
   id: (id: string) => {
-    return new AnySchema().id(id)
+    return new BaseSchema().id(id)
+  },
+
+  schema: (schema: string) => {
+    return new BaseSchema().schema(schema)
   },
 
   ref: (ref: string) => {
-    return new AnySchema().ref(ref)
+    return new BaseSchema().ref(ref)
   },
 
   title: (title: string) => {
-    return new AnySchema().title(title)
+    return new BaseSchema().title(title)
   },
 
   description: (description: string) => {
-    return new AnySchema().description(description)
+    return new BaseSchema().description(description)
   },
 
   examples: (...examples: any[]) => {
-    return new AnySchema().examples(...examples)
+    return new BaseSchema().examples(...examples)
   },
 
   default: (def: any) => {
-    return new AnySchema().default(def)
+    return new BaseSchema().default(def)
+  },
+
+  definition: (name: string, defintion: BaseSchema) => {
+    return new BaseSchema().definition(name, defintion)
   }
 }

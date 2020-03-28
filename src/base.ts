@@ -1,9 +1,19 @@
 import { Schema } from '.'
-import EnumSchema from './enum'
-import ConstSchema from './const'
-import CombiningSchema from './combining'
+
+export type Enumerable = string | number | null | boolean | {} | any[]
+
+export type Types = [
+  ['boolean', boolean],
+  ['null', null],
+  ['array', any[]],
+  ['object', {}],
+  ['string', string],
+  ['number', number],
+  ['integer', number]
+][number]
 
 export interface BaseJsonSchema {
+  type?: Types[0]
   $id?: string
   $ref?: string
   $schema?: string
@@ -12,9 +22,15 @@ export interface BaseJsonSchema {
   examples?: any[]
   default?: any
   definitions?: Record<string, Schema['plain']>
+  enum?: Enumerable[]
+  const?: Enumerable
+  oneOf?: Schema['plain'][]
+  anyOf?: Schema['plain'][]
+  allOf?: Schema['plain'][]
+  not?: Schema['plain'][]
 }
 
-export default class BaseSchema<T = any, R extends boolean = boolean, S extends BaseJsonSchema = BaseJsonSchema> {
+export default class BaseSchema<T = any, R extends boolean = true, S extends BaseJsonSchema = BaseJsonSchema> {
   type: T
   shape: R extends true ? T : T | undefined
   plain: S = {} as S
@@ -57,7 +73,7 @@ export default class BaseSchema<T = any, R extends boolean = boolean, S extends 
     return this
   }
 
-  definition (name: string, definition: Schema) {
+  definition (name: string, definition: BaseSchema) {
     this.definitions = { ...this.definitions, [name]: definition.plain }
     return this
   }
@@ -67,34 +83,49 @@ export default class BaseSchema<T = any, R extends boolean = boolean, S extends 
     return this
   }
 
-  enum <C extends BaseSchema<T>, P extends T> (this: C, ...values: P[]): C & EnumSchema<P> {
-    this.plain = { ...this.plain, ...new EnumSchema(...values).plain }
+  enum <C extends BaseSchema<T>, P extends T> (this: C, ...values: P[]): C & BaseSchema<P> {
+    this.plain = { ...this.plain, enum: values }
     return this as any
   }
 
-  const <C extends BaseSchema<T>, P extends T> (this: C, value: P): C & ConstSchema<P> {
-    this.plain = { ...this.plain, ...new ConstSchema(value).plain }
+  const <C extends BaseSchema<T>, P extends T> (this: C, value: P): C & BaseSchema<P> {
+    this.plain = { ...this.plain, const: value }
     return this as any
   }
 
   anyOf <C extends BaseSchema<T>, P extends BaseSchema<T>[]> (this: C, ...schemas: P): C & P[number] {
-    this.plain = { ...this.plain, ...new CombiningSchema('anyOf', ...schemas).plain }
+    this.plain = { ...this.plain, anyOf: schemas.map(schema => schema.plain) }
     return this
   }
 
   allOf <C extends BaseSchema<T>, P extends BaseSchema<T>[]> (this: C, ...schemas: P) : C & P[number] {
-    this.plain = { ...this.plain, ...new CombiningSchema('allOf', ...schemas).plain }
+    this.plain = { ...this.plain, allOf: schemas.map(schema => schema.plain) }
     return this
   }
 
   oneOf <C extends BaseSchema<T>, P extends BaseSchema<T>[]> (this: C, ...schemas: P) : C & P[number] {
-    this.plain = { ...this.plain, ...new CombiningSchema('oneOf', ...schemas).plain }
+    this.plain = { ...this.plain, oneOf: schemas.map(schema => schema.plain) }
     return this
   }
 
-  not <P extends Schema[]> (...schemas: P) {
-    this.plain = { ...this.plain, ...new CombiningSchema('not', ...schemas).plain }
+  not <P extends BaseSchema[]> (...schemas: P) {
+    this.plain = { ...this.plain, not: schemas.map(schema => schema.plain) }
     return this
+  }
+
+  optional (): BaseSchema<T, false> {
+    this.isRequired = false
+    return this as any
+  }
+
+  required (): BaseSchema<T, true> {
+    this.isRequired = true
+    return this as any
+  }
+
+  as <T extends Types[0]> (type?: T): BaseSchema<Extract<Types, [T, any]>[1]> {
+    this.plain.type = type
+    return this as any
   }
 
   valueOf (): S {

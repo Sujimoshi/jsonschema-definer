@@ -17,19 +17,13 @@ export interface ObjectJsonSchema extends BaseJsonSchema {
 export default class ObjectSchema<T extends {} = {}, R extends boolean = true> extends BaseSchema<T, R, ObjectJsonSchema> {
   plain: ObjectJsonSchema = { type: 'object' }
 
-  static shape <T extends Record<string, Schema>> (props: T) {
-    const res = new ObjectSchema<{ [K in keyof T]: T[K]['shape'] }>().additionalProperties(false)
-    for (const prop in props) res.prop(prop, props[prop])
-    return res
-  }
-
-  prop (name: string, schema: Schema) {
+  prop <K extends string, S extends BaseSchema<any, boolean>> (name: K, schema: S): ObjectSchema<this['shape'] & { [P in K]: S['shape'] }> {
     this.plain.properties = { ...this.plain.properties, [name]: schema.plain }
     if (schema.isRequired) this.plain.required = [...this.plain.required || [], name]
-    return this
+    return this as any
   }
 
-  additionalProperties (schema: Schema | boolean) {
+  additionalProperties (schema: BaseSchema | boolean) {
     this.plain.additionalProperties = typeof schema === 'boolean' ? schema : schema.plain
     return this
   }
@@ -49,15 +43,15 @@ export default class ObjectSchema<T extends {} = {}, R extends boolean = true> e
     return this
   }
 
-  dependencies (deps: Record<string, string[] | Schema>) {
+  dependencies (deps: Record<string, string[] | BaseSchema>) {
     this.plain.dependencies = {}
     for (const dep in deps) {
-      this.plain.dependencies[dep] = (deps[dep] as Schema).isTyperSchema ? (deps[dep] as Schema).plain : (deps[dep] as string[])
+      this.plain.dependencies[dep] = (deps[dep] as BaseSchema).isTyperSchema ? (deps[dep] as BaseSchema).plain : (deps[dep] as string[])
     }
     return this
   }
 
-  patternProperties (props: Record<string, Schema>) {
+  patternProperties (props: Record<string, BaseSchema>) {
     this.plain.patternProperties = {}
     for (const prop in props) this.plain.patternProperties[prop] = props[prop].plain
     return this
