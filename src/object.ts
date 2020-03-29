@@ -7,63 +7,63 @@ export interface ObjectJsonSchema extends BaseJsonSchema {
   properties?: Record<string, Schema['plain']>
   required?: string[]
   additionalProperties?: Schema['plain'] | boolean
-  propertyNames?: StringSchema
+  propertyNames?: StringSchema['plain']
   minProperties?: number
   maxProperties?: number
   dependencies?: Record<string, string[] | Schema['plain']>
   patternProperties?: Record<string, Schema['plain']>
+  instanceof?: string
 }
 
-export default class ObjectSchema<T extends {} = {}, R extends boolean = true> extends BaseSchema<T, R, ObjectJsonSchema> {
-  plain: ObjectJsonSchema = { type: 'object' }
+export default class ObjectSchema<T extends Record<string, any> = Record<string, any>, R extends boolean = true> extends BaseSchema<T, R, Readonly<ObjectJsonSchema>> {
+  constructor () {
+    super('object')
+  }
 
   prop <K extends string, S extends BaseSchema<any, boolean>> (name: K, schema: S): ObjectSchema<this['shape'] & { [P in K]: S['shape'] }> {
-    this.plain.properties = { ...this.plain.properties, [name]: schema.plain }
-    if (schema.isRequired) this.plain.required = [...this.plain.required || [], name]
-    return this as any
+    return this.copyWith({
+      plain: {
+        properties: { ...this.plain.properties, [name]: schema.plain },
+        ...(schema.isRequired && { required: [...this.plain.required || [], name] })
+      }
+    }) as any
   }
 
   additionalProperties (schema: BaseSchema | boolean) {
-    this.plain.additionalProperties = typeof schema === 'boolean' ? schema : schema.plain
-    return this
+    return this.copyWith({ plain: { additionalProperties: typeof schema === 'boolean' ? schema : schema.plain } })
   }
 
   propertyNames (nameSchema: StringSchema) {
-    this.plain.propertyNames = nameSchema
-    return this
+    return this.copyWith({ plain: { propertyNames: nameSchema.plain } })
   }
 
   minProperties (number: number) {
-    this.plain.minProperties = number
-    return this
+    return this.copyWith({ plain: { minProperties: number } })
   }
 
   maxProperties (number: number) {
-    this.plain.maxProperties = number
-    return this
+    return this.copyWith({ plain: { maxProperties: number } })
   }
 
   dependencies (deps: Record<string, string[] | BaseSchema>) {
-    this.plain.dependencies = {}
+    const dependencies: ObjectJsonSchema['dependencies'] = {}
     for (const dep in deps) {
-      this.plain.dependencies[dep] = (deps[dep] as BaseSchema).isTyperSchema ? (deps[dep] as BaseSchema).plain : (deps[dep] as string[])
+      dependencies[dep] = Array.isArray(deps[dep]) ? (deps[dep] as string[]) : (deps[dep] as BaseSchema).plain
     }
-    return this
+    return this.copyWith({ plain: { dependencies } })
   }
 
   patternProperties (props: Record<string, BaseSchema>) {
-    this.plain.patternProperties = {}
-    for (const prop in props) this.plain.patternProperties[prop] = props[prop].plain
-    return this
+    const patternProperties: ObjectJsonSchema['patternProperties'] = {}
+    for (const prop in props) patternProperties[prop] = props[prop].plain
+    return this.copyWith({ plain: { patternProperties } })
+  }
+
+  required (...fields: string[]) {
+    return this.copyWith({ plain: { required: [...this.plain.required || [], ...fields] } })
   }
 
   optional (): ObjectSchema<T, false> {
-    this.isRequired = false
-    return this as ObjectSchema<T, false>
-  }
-
-  required (): ObjectSchema<T, true> {
-    this.isRequired = true
-    return this as ObjectSchema<T, true>
+    return this.copyWith({ isRequired: false }) as any
   }
 }

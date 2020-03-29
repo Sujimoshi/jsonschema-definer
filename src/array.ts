@@ -11,48 +11,42 @@ export interface ArrayJsonSchema extends BaseJsonSchema {
   items?: Schema['plain'] | Schema['plain'][]
 }
 
-export default class ArraySchema<T extends any = any, R extends boolean = true> extends BaseSchema<T[], R, ArrayJsonSchema> {
-  plain: ArrayJsonSchema = { type: 'array' }
+export default class ArraySchema<T extends any = any, R extends boolean = true> extends BaseSchema<T[], R, Readonly<ArrayJsonSchema>> {
+  constructor () {
+    super('array')
+  }
 
   items <P extends Schema> (items: P | P[]): ArraySchema<P['type'], R> {
-    this.plain.items = Array.isArray(items) ? items.map(el => el.plain) : items.plain
-    return this
+    return this.copyWith({ plain: { items: Array.isArray(items) ? items.map(el => el.plain) : items.plain } })
   }
 
   additionalItems (additional: Schema | Schema[] | boolean) {
-    this.plain.additionalItems = Array.isArray(additional) ? additional.map(el => el.plain)
-      : typeof additional === 'boolean' ? additional
-        : additional.plain
-    return this
+    return this.copyWith({
+      plain: {
+        additionalItems: Array.isArray(additional) ? additional.map(el => el.plain)
+          : typeof additional === 'boolean' ? additional
+            : additional.plain
+      }
+    })
   }
 
   contains (contains: Schema) {
-    this.plain.contains = contains.plain
-    return this
+    return this.copyWith({ plain: { contains: contains.plain } })
   }
 
   minItems (num: number) {
-    this.plain.minItems = num
-    return this
+    return this.copyWith({ plain: { minItems: num } })
   }
 
   maxItems (num: number) {
-    this.plain.maxItems = num
-    return this
+    return this.copyWith({ plain: { maxItems: num } })
   }
 
-  uniqueItems () {
-    this.plain.uniqueItems = true
-    return this
+  uniqueItems (unique: boolean = true) {
+    return this.copyWith({ plain: { uniqueItems: unique } })
   }
 
   optional (): ArraySchema<T, false> {
-    this.isRequired = false
-    return this as ArraySchema<T, false>
-  }
-
-  required (): ArraySchema<T, true> {
-    this.isRequired = true
-    return this as ArraySchema<T, true>
+    return this.copyWith({ isRequired: false }) as any
   }
 }

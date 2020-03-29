@@ -10,46 +10,36 @@ export interface StringJsonSchema extends BaseJsonSchema {
   contentEncoding?: string
 }
 
-export default class StringSchema<R extends boolean = true> extends BaseSchema<string, R, StringJsonSchema> {
-  plain: StringJsonSchema = { type: 'string' }
-
-  contentMediaType (type: string) {
-    this.plain.contentMediaType = type
-    return this
+export default class StringSchema<R extends boolean = true> extends BaseSchema<string, R, Readonly<StringJsonSchema>> {
+  constructor () {
+    super('string')
   }
 
-  contentEncoding (encoding: string) {
-    this.plain.contentEncoding = encoding
-    return this
+  contentMediaType (contentMediaType: string) {
+    return this.copyWith({ plain: { contentMediaType } })
   }
 
-  format (str: string) {
-    this.plain.format = str
-    return this
+  contentEncoding (contentEncoding: string) {
+    return this.copyWith({ plain: { contentEncoding } })
   }
 
-  minLength (num: number) {
-    this.plain.minLength = num
-    return this
+  format (format: string) {
+    return this.copyWith({ plain: { format } })
   }
 
-  maxLength (num: number) {
-    this.plain.maxLength = num
-    return this
+  minLength (minLength: number) {
+    return this.copyWith({ plain: { minLength } })
   }
 
-  pattern (regexp: RegExp) {
-    this.plain.pattern = regexp.toString()
-    return this
+  maxLength (maxLength: number) {
+    return this.copyWith({ plain: { maxLength } })
   }
 
-  required (): StringSchema<true> {
-    this.isRequired = true
-    return this as StringSchema<true>
+  pattern (pattern: RegExp) {
+    return this.copyWith({ plain: { pattern: pattern.toString() } })
   }
 
   optional (): StringSchema<false> {
-    this.isRequired = false
-    return this as StringSchema<false>
+    return this.copyWith({ isRequired: true }) as any
   }
 }

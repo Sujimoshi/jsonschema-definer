@@ -2,7 +2,7 @@ import StringSchema from './string'
 import NumericSchema from './numeric'
 import ArraySchema from './array'
 import ObjectSchema from './object'
-import BaseSchema, { Enumerable } from './base'
+import BaseSchema, { Enumerable, Class } from './base'
 
 export type Schema =
   BaseSchema
@@ -10,6 +10,11 @@ export type Schema =
   | NumericSchema
   | ArraySchema
   | ObjectSchema
+
+export type Optional<T> = { [P in {[K in keyof T]: undefined extends T[K] ? K : never}[keyof T]]?: T[P] }
+  & { [P in Exclude<keyof T, {[K in keyof T]: undefined extends T[K] ? K : never}[keyof T]>]: T[P] }
+
+export { BaseSchema, StringSchema, NumericSchema, ArraySchema, ObjectSchema, Enumerable }
 
 export default {
   string: (): StringSchema => {
@@ -25,11 +30,11 @@ export default {
   },
 
   boolean: () => {
-    return new BaseSchema().as('boolean')
+    return new BaseSchema<boolean>('boolean')
   },
 
   null: () => {
-    return new BaseSchema().as('null')
+    return new BaseSchema<null>('null')
   },
 
   array: (): ArraySchema => {
@@ -44,9 +49,9 @@ export default {
     return new ObjectSchema()
   },
 
-  shape: <T extends Record<string, BaseSchema<any, boolean>>>(props: T) => {
-    const res = new ObjectSchema<{ [K in keyof T]: T[K]['shape'] }>().additionalProperties(false)
-    for (const prop in props) res.prop(prop, props[prop])
+  shape: <T extends Record<string, BaseSchema<any, boolean>>>(props: T, additional: boolean = false) => {
+    let res = new ObjectSchema<{ [K in keyof T]: T[K]['shape'] }>().additionalProperties(additional)
+    for (const prop in props) res = res.prop(prop, props[prop])
     return res
   },
 
@@ -78,7 +83,7 @@ export default {
     return new BaseSchema()
   },
 
-  raw: (fragment: object) => {
+  raw: (fragment: Record<string, any>) => {
     return new BaseSchema().raw(fragment)
   },
 
@@ -112,5 +117,9 @@ export default {
 
   definition: (name: string, defintion: BaseSchema) => {
     return new BaseSchema().definition(name, defintion)
+  },
+
+  instanceOf: <T extends Class> (obj: T): BaseSchema<InstanceType<T>> => {
+    return new BaseSchema<T>().instanceOf(obj)
   }
 }

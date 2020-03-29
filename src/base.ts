@@ -1,19 +1,10 @@
 import { Schema } from '.'
+import Ajv, { ErrorObject } from 'ajv'
 
-export type Enumerable = string | number | null | boolean | {} | any[]
-
-export type Types = [
-  ['boolean', boolean],
-  ['null', null],
-  ['array', any[]],
-  ['object', {}],
-  ['string', string],
-  ['number', number],
-  ['integer', number]
-][number]
+export type Enumerable = boolean | null | string | number | Record<string, any> | Array<any>
 
 export interface BaseJsonSchema {
-  type?: Types[0]
+  type?: 'boolean' | 'null' | 'array' | 'object' | 'string' | 'number' | 'integer'
   $id?: string
   $ref?: string
   $schema?: string
@@ -22,110 +13,130 @@ export interface BaseJsonSchema {
   examples?: any[]
   default?: any
   definitions?: Record<string, Schema['plain']>
-  enum?: Enumerable[]
+  enum?: Enumerable
   const?: Enumerable
   oneOf?: Schema['plain'][]
   anyOf?: Schema['plain'][]
   allOf?: Schema['plain'][]
   not?: Schema['plain'][]
+  if?: Schema['plain']
+  then?: Schema['plain']
+  else?: Schema['plain']
+  instanceOf?: string
 }
 
-export default class BaseSchema<T = any, R extends boolean = true, S extends BaseJsonSchema = BaseJsonSchema> {
-  type: T
-  shape: R extends true ? T : T | undefined
-  plain: S = {} as S
-  isRequired: boolean = true
-  isTyperSchema = true
-  $schema = 'http://json-schema.org/draft-07/schema#'
-  definitions: Record<string, Schema['plain']>
+export type Class<T = any> = { new (): T, prototype: T, name: string }
 
-  id (id: string) {
-    this.plain.$id = id
-    return this
+export default class BaseSchema<T = any, R extends boolean = true, S extends BaseJsonSchema = Readonly<BaseJsonSchema>> {
+  static ajv = new Ajv().addKeyword('instanceOf', {
+    validate: (value: string, data: any) => value === data.constructor.name
+  })
+
+  readonly type: T
+  readonly shape: R extends true ? T : T | undefined
+  readonly plain: S = {} as S
+  readonly isRequired: boolean = true
+  readonly isFluentSchema = true
+  readonly $schema = 'http://json-schema.org/draft-07/schema#'
+  readonly definitions: Record<string, Schema['plain']>
+
+  constructor (type?: S['type']) {
+    if (type) (this.plain as S).type = type
   }
 
-  ref (ref: string) {
-    this.plain.$ref = ref
-    return this
+  id ($id: string) {
+    return this.copyWith({ plain: { $id } })
   }
 
-  schema (schema: string) {
-    this.$schema = schema
+  ref ($ref: string) {
+    return this.copyWith({ plain: { $ref } })
+  }
+
+  schema ($schema: string) {
+    return this.copyWith({ plain: { $schema } })
   }
 
   title (title: string) {
-    this.plain.title = title
-    return this
+    return this.copyWith({ plain: { title } })
   }
 
   description (description: string) {
-    this.plain.description = description
-    return this
+    return this.copyWith({ plain: { description } })
   }
 
   examples (...examples: any[]) {
-    this.plain.examples = examples
-    return this
+    return this.copyWith({ plain: { examples } })
   }
 
   default (def: T) {
-    this.plain.default = def
-    return this
+    return this.copyWith({ plain: { default: def } })
   }
 
   definition (name: string, definition: BaseSchema) {
-    this.definitions = { ...this.definitions, [name]: definition.plain }
-    return this
+    return this.copyWith({ definitions: { ...this.definitions, [name]: definition.plain } })
   }
 
-  raw (fragment: object) {
-    this.plain = { ...this.plain, ...fragment }
-    return this
+  raw (fragment: Record<string, any>) {
+    return this.copyWith({ plain: { ...fragment } }) as any
   }
 
-  enum <C extends BaseSchema<T>, P extends T> (this: C, ...values: P[]): C & BaseSchema<P> {
-    this.plain = { ...this.plain, enum: values }
-    return this as any
+  enum <P extends T> (...values: P[]): BaseSchema<P> {
+    return this.copyWith({ plain: { enum: values } }) as any
   }
 
-  const <C extends BaseSchema<T>, P extends T> (this: C, value: P): C & BaseSchema<P> {
-    this.plain = { ...this.plain, const: value }
-    return this as any
+  const <P extends T> (value: P): BaseSchema<P> {
+    return this.copyWith({ plain: { const: value } }) as any
   }
 
-  anyOf <C extends BaseSchema<T>, P extends BaseSchema<T>[]> (this: C, ...schemas: P): C & P[number] {
-    this.plain = { ...this.plain, anyOf: schemas.map(schema => schema.plain) }
-    return this
+  anyOf <P extends BaseSchema<T>[]> (...schemas: P): BaseSchema<P[number]['type']> {
+    return this.copyWith({ plain: { anyOf: schemas.map(schema => schema.plain) } }) as any
   }
 
-  allOf <C extends BaseSchema<T>, P extends BaseSchema<T>[]> (this: C, ...schemas: P) : C & P[number] {
-    this.plain = { ...this.plain, allOf: schemas.map(schema => schema.plain) }
-    return this
+  allOf <P extends BaseSchema<T>[]> (...schemas: P): BaseSchema<P[number]['type']> {
+    return this.copyWith({ plain: { allOf: schemas.map(schema => schema.plain) } }) as any
   }
 
-  oneOf <C extends BaseSchema<T>, P extends BaseSchema<T>[]> (this: C, ...schemas: P) : C & P[number] {
-    this.plain = { ...this.plain, oneOf: schemas.map(schema => schema.plain) }
-    return this
+  oneOf <P extends BaseSchema<T>[]> (...schemas: P): BaseSchema<P[number]['type']> {
+    return this.copyWith({ plain: { oneOf: schemas.map(schema => schema.plain) } }) as any
   }
 
-  not <P extends BaseSchema[]> (...schemas: P) {
-    this.plain = { ...this.plain, not: schemas.map(schema => schema.plain) }
-    return this
+  not <P extends BaseSchema[]> (...schemas: P): this {
+    return this.copyWith({ plain: { not: schemas.map(schema => schema.plain) } })
   }
 
   optional (): BaseSchema<T, false> {
-    this.isRequired = false
-    return this as any
+    return this.copyWith({ isRequired: false }) as any
   }
 
-  required (): BaseSchema<T, true> {
-    this.isRequired = true
-    return this as any
+  ifThen (ifClause: BaseSchema, thenClause: BaseSchema) {
+    return this.copyWith({ plain: { if: ifClause.plain, then: thenClause.plain } })
   }
 
-  as <T extends Types[0]> (type?: T): BaseSchema<Extract<Types, [T, any]>[1]> {
-    this.plain.type = type
-    return this as any
+  ifThenElse (ifClause: BaseSchema, thenClause: BaseSchema, elseClause: BaseSchema) {
+    return this.copyWith({ plain: { if: ifClause.plain, then: thenClause.plain, else: elseClause.plain } })
+  }
+
+  instanceOf <P extends Class> (Class: P): BaseSchema<InstanceType<P>> {
+    return this.copyWith({ plain: { instanceOf: Class.name } }) as any
+  }
+
+  validate (data: T extends Class ? InstanceType<T> : T): [boolean | PromiseLike<any>, ErrorObject[] | null | undefined] {
+    return [BaseSchema.ajv.validate(this.valueOf(), data), BaseSchema.ajv.errors]
+  }
+
+  validatePartial (data: any): [boolean | PromiseLike<any>, ErrorObject[] | null | undefined] {
+    const partial = (schema: any) => {
+      for (const key in schema.properties || {}) {
+        if (schema.properties[key] === 'object') schema.properties[key] = partial(schema.properties[key])
+      }
+      const { required, ...partialSchema } = schema // eslint-disable-line @typescript-eslint/no-unused-vars
+      return partialSchema
+    }
+    return [BaseSchema.ajv.validate(partial(this.valueOf()), data), BaseSchema.ajv.errors]
+  }
+
+  copyWith (modifyObject: Partial<BaseSchema & { plain: Partial<Schema['plain']> }>): this {
+    return Object.assign(Object.create(this.constructor.prototype), { ...this, ...modifyObject, plain: { ...this.plain, ...modifyObject.plain } })
   }
 
   valueOf (): S {

@@ -9,36 +9,24 @@ export interface NumericJsonSchema extends BaseJsonSchema {
   multipleOf?: number
 }
 
-export default class NumericSchema<R extends boolean = true> extends BaseSchema<number, R, NumericJsonSchema> {
-  constructor (type: 'number' | 'integer') {
-    super()
-    this.plain.type = type
+export default class NumericSchema<R extends boolean = true> extends BaseSchema<number, R, Readonly<NumericJsonSchema>> {
+  constructor (type: NumericJsonSchema['type']) {
+    super(type)
   }
 
-  minimum (num: number, exclusive?: true) {
-    this.plain.minimum = num
-    if (exclusive) this.plain.exclusiveMinimum = true
-    return this
+  minimum (num: number, exclusive: boolean = false) {
+    return this.copyWith({ plain: { minimum: num, exclusiveMinimum: exclusive } })
   }
 
-  maximum (num: number, exclusive?: true) {
-    this.plain.maximum = num
-    if (exclusive) this.plain.exclusiveMaximum = true
-    return this
+  maximum (num: number, exclusive: boolean = false) {
+    return this.copyWith({ plain: { maximum: num, exclusiveMaximum: exclusive } })
   }
 
   multipleOf (num: number) {
-    this.plain.multipleOf = num
-    return this
-  }
-
-  required (): NumericSchema<true> {
-    this.isRequired = true
-    return this as NumericSchema<true>
+    return this.copyWith({ plain: { multipleOf: num } })
   }
 
   optional (): NumericSchema<false> {
-    this.isRequired = false
-    return this as NumericSchema<false>
+    return this.copyWith({ isRequired: false }) as any
   }
 }
