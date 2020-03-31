@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "ES6",
+    "moduleResolution": "node",
+    "noImplicitAny": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "strictNullChecks": true,
+    "sourceMap": true,
+    "declaration": true,
+    "outDir": "dist"
+  },
+  "include": ["src/**/*"],
+  "exclude": ["**/*.test.ts"]
+}
