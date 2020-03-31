@@ -18,7 +18,7 @@ export interface BaseJsonSchema {
   oneOf?: Schema['plain'][]
   anyOf?: Schema['plain'][]
   allOf?: Schema['plain'][]
-  not?: Schema['plain'][]
+  not?: Schema['plain']
   if?: Schema['plain']
   then?: Schema['plain']
   else?: Schema['plain']
@@ -37,7 +37,7 @@ export default class BaseSchema<T = any, R extends boolean = true, S extends Bas
   readonly plain: S = {} as S
   readonly isRequired: boolean = true
   readonly isFluentSchema = true
-  readonly $schema = 'http://json-schema.org/draft-07/schema#'
+  readonly $schema: string = 'http://json-schema.org/draft-07/schema#'
   readonly definitions: Record<string, Schema['plain']>
 
   constructor (type?: S['type']) {
@@ -53,7 +53,7 @@ export default class BaseSchema<T = any, R extends boolean = true, S extends Bas
   }
 
   schema ($schema: string) {
-    return this.copyWith({ plain: { $schema } })
+    return this.copyWith({ $schema })
   }
 
   title (title: string) {
@@ -100,8 +100,8 @@ export default class BaseSchema<T = any, R extends boolean = true, S extends Bas
     return this.copyWith({ plain: { oneOf: schemas.map(schema => schema.plain) } }) as any
   }
 
-  not <P extends BaseSchema[]> (...schemas: P): this {
-    return this.copyWith({ plain: { not: schemas.map(schema => schema.plain) } })
+  not <P extends BaseSchema> (not: P): this {
+    return this.copyWith({ plain: { not: not.plain } })
   }
 
   optional (): BaseSchema<T, false> {
@@ -122,17 +122,6 @@ export default class BaseSchema<T = any, R extends boolean = true, S extends Bas
 
   validate (data: T extends Class ? InstanceType<T> : T): [boolean | PromiseLike<any>, ErrorObject[] | null | undefined] {
     return [BaseSchema.ajv.validate(this.valueOf(), data), BaseSchema.ajv.errors]
-  }
-
-  validatePartial (data: any): [boolean | PromiseLike<any>, ErrorObject[] | null | undefined] {
-    const partial = (schema: any) => {
-      for (const key in schema.properties || {}) {
-        if (schema.properties[key] === 'object') schema.properties[key] = partial(schema.properties[key])
-      }
-      const { required, ...partialSchema } = schema // eslint-disable-line @typescript-eslint/no-unused-vars
-      return partialSchema
-    }
-    return [BaseSchema.ajv.validate(partial(this.valueOf()), data), BaseSchema.ajv.errors]
   }
 
   copyWith (modifyObject: Partial<BaseSchema & { plain: Partial<Schema['plain']> }>): this {

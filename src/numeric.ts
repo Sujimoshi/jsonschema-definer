@@ -4,8 +4,8 @@ export interface NumericJsonSchema extends BaseJsonSchema {
   type: 'number' | 'integer'
   minimum?: number
   maximum?: number
-  exclusiveMinimum?: boolean
-  exclusiveMaximum?: boolean
+  exclusiveMinimum?: number
+  exclusiveMaximum?: number
   multipleOf?: number
 }
 
@@ -14,12 +14,12 @@ export default class NumericSchema<R extends boolean = true> extends BaseSchema<
     super(type)
   }
 
-  minimum (num: number, exclusive: boolean = false) {
-    return this.copyWith({ plain: { minimum: num, exclusiveMinimum: exclusive } })
+  minimum (minimum: number, exclusive: boolean = false) {
+    return this.copyWith({ plain: exclusive ? { exclusiveMinimum: minimum } : { minimum } })
   }
 
-  maximum (num: number, exclusive: boolean = false) {
-    return this.copyWith({ plain: { maximum: num, exclusiveMaximum: exclusive } })
+  maximum (maximum: number, exclusive: boolean = false) {
+    return this.copyWith({ plain: exclusive ? { exclusiveMaximum: maximum } : { maximum } })
   }
 
   multipleOf (num: number) {

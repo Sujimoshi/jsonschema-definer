@@ -1,5 +1,5 @@
 module.exports = {
   collectCoverage: true,
   transform: { '^.+\\.ts$': 'ts-jest' },
-  moduleFileExtensions: ['ts']
+  moduleFileExtensions: ['ts', 'js']
 }

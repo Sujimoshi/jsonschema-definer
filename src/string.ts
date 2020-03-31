@@ -36,10 +36,10 @@ export default class StringSchema<R extends boolean = true> extends BaseSchema<s
   }
 
   pattern (pattern: RegExp) {
-    return this.copyWith({ plain: { pattern: pattern.toString() } })
+    return this.copyWith({ plain: { pattern: pattern.toString().substr(1).replace(`/${pattern.flags}`, '') } })
   }
 
   optional (): StringSchema<false> {
-    return this.copyWith({ isRequired: true }) as any
+    return this.copyWith({ isRequired: false }) as any
   }
 }

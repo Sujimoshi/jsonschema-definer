@@ -3,6 +3,9 @@ import NumericSchema from './numeric'
 import ArraySchema from './array'
 import ObjectSchema from './object'
 import BaseSchema, { Enumerable, Class } from './base'
+import { O } from 'ts-toolbelt'
+
+export type Optional<T extends object> = O.Optional<T, O.SelectKeys<T, undefined>>
 
 export type Schema =
   BaseSchema
@@ -10,9 +13,6 @@ export type Schema =
   | NumericSchema
   | ArraySchema
   | ObjectSchema
-
-export type Optional<T> = { [P in {[K in keyof T]: undefined extends T[K] ? K : never}[keyof T]]?: T[P] }
-  & { [P in Exclude<keyof T, {[K in keyof T]: undefined extends T[K] ? K : never}[keyof T]>]: T[P] }
 
 export { BaseSchema, StringSchema, NumericSchema, ArraySchema, ObjectSchema, Enumerable }
 
@@ -50,7 +50,7 @@ export default {
   },
 
   shape: <T extends Record<string, BaseSchema<any, boolean>>>(props: T, additional: boolean = false) => {
-    let res = new ObjectSchema<{ [K in keyof T]: T[K]['shape'] }>().additionalProperties(additional)
+    let res = new ObjectSchema<Optional<{ [K in keyof T]: T[K]['shape'] }>>().additionalProperties(additional)
     for (const prop in props) res = res.prop(prop, props[prop])
     return res
   },
@@ -75,8 +75,16 @@ export default {
     return new BaseSchema<T[number]['type']>().oneOf(...schemas)
   },
 
-  not: <T extends BaseSchema[]>(...schemas: T) => {
-    return new BaseSchema<T[number]['type']>().not(...schemas)
+  not: <T extends BaseSchema>(schema: T) => {
+    return new BaseSchema<any>().not(schema)
+  },
+
+  ifThen (ifClause: BaseSchema, thenClause: BaseSchema) {
+    return new BaseSchema<any>().ifThen(ifClause, thenClause)
+  },
+
+  ifThenElse (ifClause: BaseSchema, thenClause: BaseSchema, elseClause: BaseSchema) {
+    return new BaseSchema<any>().ifThenElse(ifClause, thenClause, elseClause)
   },
 
   any: () => {

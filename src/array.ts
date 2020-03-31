@@ -16,21 +16,15 @@ export default class ArraySchema<T extends any = any, R extends boolean = true> 
     super('array')
   }
 
-  items <P extends Schema> (items: P | P[]): ArraySchema<P['type'], R> {
+  items <P extends BaseSchema> (items: P | P[]): ArraySchema<P['type'], R> {
     return this.copyWith({ plain: { items: Array.isArray(items) ? items.map(el => el.plain) : items.plain } })
   }
 
-  additionalItems (additional: Schema | Schema[] | boolean) {
-    return this.copyWith({
-      plain: {
-        additionalItems: Array.isArray(additional) ? additional.map(el => el.plain)
-          : typeof additional === 'boolean' ? additional
-            : additional.plain
-      }
-    })
+  additionalItems <P extends BaseSchema | boolean> (additional: P): P extends BaseSchema ? ArraySchema<T | P['type'], R> : this {
+    return this.copyWith({ plain: { additionalItems: typeof additional === 'boolean' ? additional : (additional as Schema).plain } }) as any
   }
 
-  contains (contains: Schema) {
+  contains <P extends BaseSchema> (contains: P): ArraySchema<T | P['type'], R> {
     return this.copyWith({ plain: { contains: contains.plain } })
   }
 

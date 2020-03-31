@@ -15,18 +15,18 @@ export interface ObjectJsonSchema extends BaseJsonSchema {
   instanceof?: string
 }
 
-export default class ObjectSchema<T extends Record<string, any> = Record<string, any>, R extends boolean = true> extends BaseSchema<T, R, Readonly<ObjectJsonSchema>> {
+export default class ObjectSchema<T extends Record<string, any> = {}, R extends boolean = true> extends BaseSchema<T, R, Readonly<ObjectJsonSchema>> {
   constructor () {
     super('object')
   }
 
-  prop <K extends string, S extends BaseSchema<any, boolean>> (name: K, schema: S): ObjectSchema<this['shape'] & { [P in K]: S['shape'] }> {
+  prop <K extends string, S extends BaseSchema<any, boolean>> (name: K, schema: S) {
     return this.copyWith({
       plain: {
         properties: { ...this.plain.properties, [name]: schema.plain },
         ...(schema.isRequired && { required: [...this.plain.required || [], name] })
       }
-    }) as any
+    })
   }
 
   additionalProperties (schema: BaseSchema | boolean) {
@@ -59,11 +59,24 @@ export default class ObjectSchema<T extends Record<string, any> = Record<string,
     return this.copyWith({ plain: { patternProperties } })
   }
 
-  required (...fields: string[]) {
-    return this.copyWith({ plain: { required: [...this.plain.required || [], ...fields] } })
+  required <S extends string[]> (...fields: S): ObjectSchema<O.Required<T, S[number]>, R> {
+    return this.copyWith({ plain: { required: fields } }) as any
   }
 
   optional (): ObjectSchema<T, false> {
     return this.copyWith({ isRequired: false }) as any
+  }
+
+  partial (): ObjectSchema<{}, R> {
+    const plain = (function partial (schema: any) {
+      for (const key in schema.properties || {}) {
+        if (schema.properties[key].type === 'object') {
+          schema = { ...schema, properties: { ...schema.properties, [key]: partial({ ...schema.properties[key] }) } }
+        }
+      }
+      const { required, ...partialSchema } = schema // eslint-disable-line @typescript-eslint/no-unused-vars
+      return partialSchema
+    })(this.valueOf())
+    return Object.assign(Object.create(this.constructor.prototype), { ...this, plain })
   }
 }
