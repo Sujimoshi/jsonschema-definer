@@ -1,15 +1,15 @@
 {
-  "name": "json-schema-typer",
+  "name": "jsonschema-definer",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "JSON Schema constructor and validator",
+  "main": "dist/index.js",
+  "author": "Igor Solomakha <fumo.sujimoshi@gmail.com>",
+  "license": "ISC",
   "scripts": {
     "test": "jest",
     "lint": "eslint",
     "build": "tsc"
   },
-  "author": "",
-  "license": "ISC",
   "devDependencies": {
     "@types/jest": "^25.1.4",
     "@typescript-eslint/eslint-plugin": "^2.25.0",
