@@ -89,8 +89,8 @@ describe('ObjectSchema', () => {
     const schema = S.object().additionalProperties(S.string())
 
     type Check = Expect<typeof schema.type, {}>;
-    expect(schema.validate({ strSome: 'some', numAny: 0 })[0]).toEqual(false)
+    expect(schema.validate({ strSome: 'some', numAny: 0 } as any)[0]).toEqual(false)
     expect(schema.validate({ numAny: 'string' })[0]).toEqual(true)
-    expect(schema.validate({ strSome: 0 })[0]).toEqual(false)
+    expect(schema.validate({ strSome: 0 } as any)[0]).toEqual(false)
   })
 })
