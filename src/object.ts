@@ -24,7 +24,8 @@ export default class ObjectSchema<T extends Record<string, any> = {}, R extends 
   /**
    * The value of "properties" MUST be an object. Each value of this object MUST be a valid JSON Schema
    *
-   * {@link reference|https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.5.4}
+   * @reference https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.5.4
+   *
    * @param {string} name
    * @param {ObjectSchema} schema
    * @returns {ObjectSchema}
@@ -45,11 +46,12 @@ export default class ObjectSchema<T extends Record<string, any> = {}, R extends 
    * For all such properties, validation succeeds if the child instance validates against the "additionalProperties" schema.
    * Omitting this keyword has the same behavior as an empty schema.
    *
+   * @reference https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.5.6
+   *
    * @param {BaseSchema|boolean} value
-   * {@link reference|https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.5.6}
    * @returns {ObjectSchema}
    */
-  additionalProperties <P extends BaseSchema | boolean> (schema: P): P extends BaseSchema ? ObjectSchema<O.MergeUp<T, Record<string, P['type']>>, R> : this {
+  additionalProperties <P extends BaseSchema | boolean> (schema: P): P extends BaseSchema ? ObjectSchema<O.MergeUp<T, Record<string, P['otype']>>, R> : this {
     return this.copyWith({ plain: { additionalProperties: typeof schema === 'boolean' ? schema : (schema as BaseSchema).plain } }) as any
   }
 
@@ -57,8 +59,9 @@ export default class ObjectSchema<T extends Record<string, any> = {}, R extends 
    * If the instance is an object, this keyword validates if every property name in the instance validates against the provided schema.
    * Note the property name that the schema is testing will always be a string.
    *
+   * @reference https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.5.7
+   *
    * @param {StringSchema} nameSchema
-   * {@link reference|https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.5.7}
    * @returns {ObjectSchema}
    */
   propertyNames (nameSchema: StringSchema) {
@@ -68,8 +71,9 @@ export default class ObjectSchema<T extends Record<string, any> = {}, R extends 
   /**
    * An object instance is valid against "minProperties" if its number of properties is greater than, or equal to, the value of this keyword.
    *
+   * @reference https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.5.2
+   *
    * @param {number} minProperties
-   * {@link reference|https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.5.2}
    * @returns {ObjectSchema}
    */
   minProperties (minProperties: number) {
@@ -79,8 +83,9 @@ export default class ObjectSchema<T extends Record<string, any> = {}, R extends 
   /**
    * An object instance is valid against "maxProperties" if its number of properties is less than, or equal to, the value of this keyword.
    *
+   * @reference https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.5.1
+   *
    * @param {number} maxProperties
-   * {@link reference|https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.5.1}
    * @returns {ObjectSchema}
    */
   maxProperties (maxProperties: number) {
@@ -93,8 +98,9 @@ export default class ObjectSchema<T extends Record<string, any> = {}, R extends 
    * If the dependency value is a subschema, and the dependency key is a property in the instance, the entire instance must validate against the dependency value.
    * If the dependency value is an array, each element in the array, if any, MUST be a string, and MUST be unique. If the dependency key is a property in the instance, each of the items in the dependency value must be a property that exists in the instance.
    *
+   * @reference https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.5.7
+   *
    * @param {Record<string, string[] | BaseSchema>} deps
-   * {@link reference|https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.5.7}
    * @returns {ObjectSchema}
    */
   dependencies (deps: Record<string, string[] | BaseSchema>) {
@@ -112,8 +118,9 @@ export default class ObjectSchema<T extends Record<string, any> = {}, R extends 
    * Validation of the primitive instance type against this keyword always succeeds.
    * Validation succeeds if, for each instance name that matches any regular expressions that appear as a property name in this keyword's value, the child instance for that name successfully validates against each schema that corresponds to a matching regular expression.
    *
+   * @reference https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.5.5
+   *
    * @param {Record<string, BaseSchema>} props
-   * {@link reference|https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.5.5}
    * @returns {ObjectSchema}
    */
   patternProperties (props: Record<string, BaseSchema>) {
@@ -125,7 +132,8 @@ export default class ObjectSchema<T extends Record<string, any> = {}, R extends 
   /**
    * Set required array
    *
-   * {@link reference|https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.5.3}
+   * @reference https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.5.3
+   *
    * @returns {ObjectSchema}
    */
   required <S extends string[]> (...fields: S): ObjectSchema<O.Required<T, S[number]>, R> {
@@ -134,6 +142,7 @@ export default class ObjectSchema<T extends Record<string, any> = {}, R extends 
 
   /**
    * Make schema optional in {ObjectSchema}
+   *
    * @returns {ObjectSchema}
    */
   optional (): ObjectSchema<T, false> {
@@ -142,6 +151,7 @@ export default class ObjectSchema<T extends Record<string, any> = {}, R extends 
 
   /**
    * Return new ObjectSchema with removed required fields (recursively)
+   *
    * @returns {ObjectSchema}
    */
   partial (): ObjectSchema<{}, R> {
