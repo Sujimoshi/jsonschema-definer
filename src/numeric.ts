@@ -19,7 +19,7 @@ export default class NumericSchema<R extends boolean = true> extends BaseSchema<
    *
    * @param {number} minimum
    * @param {boolean} exclusive
-   * {@link reference|https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.2.4}
+   * @reference https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.2.4
    * @returns {NumericSchema}
    */
   minimum (minimum: number, exclusive: boolean = false) {
@@ -29,7 +29,7 @@ export default class NumericSchema<R extends boolean = true> extends BaseSchema<
   /**
    * It represents  an (inclusive | exclusive) upper limit for a numeric instance.
    *
-   * {@link reference|https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.2.2}
+   * @reference https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.2.2
    * @returns {NumericSchema}
    */
   maximum (maximum: number, exclusive: boolean = false) {
@@ -40,7 +40,7 @@ export default class NumericSchema<R extends boolean = true> extends BaseSchema<
    * It must be multiple of.
    *
    * @param {number} multipleOf
-   * {@link reference|https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.2.1}
+   * @reference https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.2.1
    * @returns {NumericSchema}
    */
   multipleOf (multipleOf: number) {

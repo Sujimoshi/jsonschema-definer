@@ -20,7 +20,7 @@ export default class StringSchema<R extends boolean = true> extends BaseSchema<s
    *  This property defines the media type of instances which this schema defines.
    *
    * @param {string} contentMediaType
-   * {@link reference|https://json-schema.org/latest/json-schema-validation.html#rfc.section.8.3}
+   * @reference https://json-schema.org/latest/json-schema-validation.html#rfc.section.8.3
    * @returns {StringSchema}
    */
   contentMediaType (contentMediaType: string) {
@@ -33,7 +33,7 @@ export default class StringSchema<R extends boolean = true> extends BaseSchema<s
    *  RFC 2045, Sec 6.1 [RFC2045] lists the possible values for this property.
    *
    * @param {string} contentEncoding
-   * {@link reference|https://json-schema.org/latest/json-schema-validation.html#rfc.section.8.3}
+   * @reference https://json-schema.org/latest/json-schema-validation.html#rfc.section.8.3
    * @returns {StringSchema}
    */
   contentEncoding (contentEncoding: string) {
@@ -44,7 +44,7 @@ export default class StringSchema<R extends boolean = true> extends BaseSchema<s
    * A string value can be RELATIVE_JSON_POINTER, JSON_POINTER, UUID, REGEX, IPV6, IPV4, HOSTNAME, EMAIL, URL, URI_TEMPLATE, URI_REFERENCE, URI, TIME, DATE,
    *
    * @param {string} format
-   * {@link reference|https://json-schema.org/latest/json-schema-validation.html#rfc.section.7.3}
+   * @reference https://json-schema.org/latest/json-schema-validation.html#rfc.section.7.3
    * @returns {StringSchema}
    */
   format (format: string) {
@@ -56,7 +56,7 @@ export default class StringSchema<R extends boolean = true> extends BaseSchema<s
    * The length of a string instance is defined as the number of its characters as defined by RFC 7159 [RFC7159].
    *
    * @param {number} minLength
-   * {@link reference|https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.3.2}
+   * @reference https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.3.2
    * @returns {StringSchema}
    */
   minLength (minLength: number) {
@@ -68,7 +68,7 @@ export default class StringSchema<R extends boolean = true> extends BaseSchema<s
    * The length of a string instance is defined as the number of its characters as defined by RFC 7159 [RFC7159].
    *
    * @param {number} maxLength
-   * {@link reference|https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.3.2}
+   * @reference https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.3.2
    * @returns {StringSchema}
    */
   maxLength (maxLength: number) {
@@ -80,7 +80,7 @@ export default class StringSchema<R extends boolean = true> extends BaseSchema<s
    *  A string instance is considered valid if the regular expression matches the instance successfully.
    *
    * @param {string} pattern
-   * {@link reference|https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.3.3}
+   * @reference https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.3.3
    * @returns {StringSchema}
    */
   pattern (pattern: RegExp) {

@@ -22,8 +22,10 @@ export default class ArraySchema<T extends any = any, R extends boolean = true> 
    * If "items" is an array of schemas, validation succeeds if each element of the instance validates against the schema at the same position, if any.
    * Omitting this keyword has the same behavior as an empty schema.
    *
+   * @reference https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.4.1
+   *
    * @param {BaseSchema|BaseSchema[]} items
-   * {@link reference|https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.4.1}
+   *
    * @returns {ArraySchema}
    */
   items <P extends BaseSchema> (items: P | P[]): ArraySchema<P['type'], R> {
@@ -34,7 +36,7 @@ export default class ArraySchema<T extends any = any, R extends boolean = true> 
    * This keyword determines how child instances validate for arrays, and does not directly validate the immediate instance itself.
    *
    * @param {BaseSchema|boolean} items
-   * {@link reference|https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.4.2}
+   * @reference https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.4.2
    * @returns {ArraySchema}
    */
   additionalItems <P extends BaseSchema | boolean> (additional: P): P extends BaseSchema ? ArraySchema<T | P['type'], R> : this {
@@ -45,7 +47,7 @@ export default class ArraySchema<T extends any = any, R extends boolean = true> 
    * An array instance is valid against "contains" if at least one of its elements is valid against the given schema.
    *
    * @param {BaseSchema} value
-   * {@link reference|https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.4.2}
+   * @reference https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.4.2
    * @returns {ArraySchema}
    */
   contains <P extends BaseSchema> (contains: P): ArraySchema<T | P['type'], R> {
@@ -57,7 +59,7 @@ export default class ArraySchema<T extends any = any, R extends boolean = true> 
    * Omitting this keyword has the same behavior as a value of 0.
    *
    * @param {number} minItems
-   * {@link reference|https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.4.4}
+   * @reference https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.4.4
    * @returns {ArraySchema}
    */
   minItems (minItems: number) {
@@ -69,7 +71,7 @@ export default class ArraySchema<T extends any = any, R extends boolean = true> 
    * Omitting this keyword has the same behavior as a value of 0.
    *
    * @param {number} maxItems
-   * {@link reference|https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.4.3}
+   * @reference https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.4.3
    * @returns {this}
    */
   maxItems (maxItems: number) {
@@ -82,7 +84,7 @@ export default class ArraySchema<T extends any = any, R extends boolean = true> 
    * Omitting this keyword has the same behavior as a value of false.
    *
    * @param {boolean} boolean
-   * {@link reference|https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.4.5}
+   * @reference https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.4.5
    * @returns {this}
    */
   uniqueItems (unique: boolean = true) {

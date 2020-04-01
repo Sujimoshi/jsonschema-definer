@@ -1,9 +1,10 @@
-import { Schema } from '.'
+import { Schema, Class } from '.'
 import Ajv, { ErrorObject } from 'ajv'
 
 export type Enumerable = boolean | null | string | number | Record<string, any> | Array<any>
 
 export interface BaseJsonSchema {
+  [key: string]: any
   type?: 'boolean' | 'null' | 'array' | 'object' | 'string' | 'number' | 'integer'
   $id?: string
   $ref?: string
@@ -25,15 +26,13 @@ export interface BaseJsonSchema {
   instanceOf?: string
 }
 
-export type Class<T = any> = { new (): T, prototype: T, name: string }
-
 export default class BaseSchema<T = any, R extends boolean = true, S extends BaseJsonSchema = Readonly<BaseJsonSchema>> {
   static ajv = new Ajv().addKeyword('instanceOf', {
     validate: (value: string, data: any) => value === data.constructor.name
   })
 
   readonly type: T
-  readonly shape: R extends true ? T : T | undefined
+  readonly otype: R extends true ? T : T | undefined
   readonly plain: S = {} as S
   readonly isRequired: boolean = true
   readonly isFluentSchema = true
@@ -47,7 +46,8 @@ export default class BaseSchema<T = any, R extends boolean = true, S extends Bas
   /**
    * It defines a URI for the schema, and the base URI that other URI references within the schema are resolved against.
    *
-   * {@link https://json-schema.org/latest/json-schema-core.html#id-keyword|reference}
+   * @reference https://json-schema.org/latest/json-schema-core.html#id-keyword
+   *
    * @param {string} $id - an #id
    * @returns {this}
    */
@@ -77,7 +77,8 @@ export default class BaseSchema<T = any, R extends boolean = true, S extends Bas
   /**
    * It can be used to decorate a user interface with information about the data produced by this user interface. A title will preferably be short.
    *
-   * {@link https://json-schema.org/latest/json-schema-validation.html#rfc.section.10.1|reference}
+   * @reference https://json-schema.org/latest/json-schema-validation.html#rfc.section.10.1
+   *
    * @param {string} title
    * @returns {this}
    */
@@ -90,7 +91,8 @@ export default class BaseSchema<T = any, R extends boolean = true, S extends Bas
    * produced by this user interface. A description provides explanation about
    * the purpose of the instance described by the schema.
    *
-   * {@link https://json-schema.org/latest/json-schema-validation.html#rfc.section.10.1|reference}
+   * @reference https://json-schema.org/latest/json-schema-validation.html#rfc.section.10.1
+   *
    * @param {string} description
    * @returns {this}
    */
@@ -102,7 +104,8 @@ export default class BaseSchema<T = any, R extends boolean = true, S extends Bas
    * The value of this keyword MUST be an array.
    * There are no restrictions placed on the values within the array.
    *
-   * {@link https://json-schema.org/latest/json-schema-validation.html#rfc.section.10.4|reference}
+   * @reference https://json-schema.org/latest/json-schema-validation.html#rfc.section.10.4
+   *
    * @param {any[]} examples
    * @returns {this}
    */
@@ -113,7 +116,8 @@ export default class BaseSchema<T = any, R extends boolean = true, S extends Bas
   /**
    * There are no restrictions placed on the value of this keyword.
    *
-   * {@link reference|https://json-schema.org/latest/json-schema-validation.html#rfc.section.10.2}
+   * @reference https://json-schema.org/latest/json-schema-validation.html#rfc.section.10.2
+   *
    * @param {T} def
    * @returns {this}
    */
@@ -125,7 +129,8 @@ export default class BaseSchema<T = any, R extends boolean = true, S extends Bas
    * The "definitions" keywords provides a standardized location for schema authors to inline re-usable JSON Schemas into a more general schema.
    * There are no restrictions placed on the values within the array.
    *
-   * {@link reference|https://json-schema.org/latest/json-schema-validation.html#rfc.section.9}
+   * @reference https://json-schema.org/latest/json-schema-validation.html#rfc.section.9
+   *
    * @param {string} name
    * @param {BaseSchema} props
    * @returns {this}
@@ -142,66 +147,72 @@ export default class BaseSchema<T = any, R extends boolean = true, S extends Bas
    * - S.number().raw({ nullable:true })
    * - S.string().format('date').raw({ formatMaximum: '2020-01-01' })
    *
+   * @reference https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.3.3
+   *
    * @param {string} fragment an arbitrary JSON Schema to inject
-   * {@link reference|https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.3.3}
    * @returns {this}
    */
   raw (fragment: Record<string, any>) {
-    return this.copyWith({ plain: { ...fragment } }) as any
+    return this.copyWith({ plain: fragment })
   }
 
   /**
    * The value of this keyword MUST be an array. This array SHOULD have at least one element. Elements in the array SHOULD be unique.
    *
-   * {@link reference|https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.1.2}
+   * @reference https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.1.2
+   *
    * @param values
    * @returns {this}
    */
-  enum <P extends T> (...values: P[]): BaseSchema<P> {
+  enum <P extends T> (...values: P[]): this & BaseSchema<P, R> {
     return this.copyWith({ plain: { enum: values } }) as any
   }
 
   /**
    * The value of this keyword MAY be of any type, including null.
    *
-   * {@link reference|https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.1.3}
+   * @reference https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.1.3
+   *
    * @param value
    * @returns {this}
    */
-  const <P extends T> (value: P): BaseSchema<P> {
+  const <P extends T> (value: P): this & BaseSchema<P, R> {
     return this.copyWith({ plain: { const: value } }) as any
   }
 
   /**
    * It  MUST be a non-empty array. Each item of the array MUST be a valid JSON Schema.
    *
-   * {@link reference|https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.7.3}
+   * @reference https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.7.3
+   *
    * @param {array} schemas
    * @returns {this}
    */
-  anyOf <P extends BaseSchema<T>[]> (...schemas: P): BaseSchema<P[number]['type']> {
+  anyOf <P extends BaseSchema<T>[]> (...schemas: P): this & BaseSchema<P[number]['type'], R> {
     return this.copyWith({ plain: { anyOf: schemas.map(schema => schema.plain) } }) as any
   }
 
   /**
    * It MUST be a non-empty array. Each item of the array MUST be a valid JSON Schema.
    *
-   * {@link reference|https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.7.1}
+   * @reference https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.7.1
+   *
    * @param {array} schemas
    * @returns {this}
    */
-  allOf <P extends BaseSchema<T>[]> (...schemas: P): BaseSchema<P[number]['type']> {
+  allOf <P extends BaseSchema<T>[]> (...schemas: P): this & BaseSchema<P[number]['type'], R> {
     return this.copyWith({ plain: { allOf: schemas.map(schema => schema.plain) } }) as any
   }
 
   /**
    * It MUST be a non-empty array. Each item of the array MUST be a valid JSON Schema.
    *
+   * @reference https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.7.2
+   *
    * @param {array} schemas
-   * {@link reference|https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.7.2}
    * @returns {this}
    */
-  oneOf <P extends BaseSchema<T>[]> (...schemas: P): BaseSchema<P[number]['type']> {
+  oneOf <P extends BaseSchema<T>[]> (...schemas: P): this & BaseSchema<P[number]['type'], R> {
     return this.copyWith({ plain: { oneOf: schemas.map(schema => schema.plain) } }) as any
   }
 
@@ -230,7 +241,7 @@ export default class BaseSchema<T = any, R extends boolean = true, S extends Bas
    *
    * @param {BaseSchema} ifClause
    * @param {BaseSchema} thenClause
-   * {@link reference|https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.6.1}
+   * @reference https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.6.1
    * @returns {this}
    */
   ifThen (ifClause: BaseSchema, thenClause: BaseSchema) {
@@ -244,20 +255,11 @@ export default class BaseSchema<T = any, R extends boolean = true, S extends Bas
    * @param {BaseSchema} ifClause
    * @param {BaseSchema} thenClause
    * @param {BaseSchema} elseClause
-   * {@link reference|https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.6.1}
+   * @reference https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.6.1
    * @returns {this}
    */
   ifThenElse (ifClause: BaseSchema, thenClause: BaseSchema, elseClause: BaseSchema) {
     return this.copyWith({ plain: { if: ifClause.plain, then: thenClause.plain, else: elseClause.plain } })
-  }
-
-  /**
-   * Check the instance of of provadied value. Use ajv custom keywords. Notice: It compare using ObjectInstance.constructor.name and Object.name
-   *
-   * @param {Class} Class
-   */
-  instanceOf <P extends Class> (Class: P): BaseSchema<InstanceType<P>> {
-    return this.copyWith({ plain: { instanceOf: Class.name } }) as any
   }
 
   /**
