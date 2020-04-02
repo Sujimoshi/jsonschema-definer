@@ -175,12 +175,18 @@ Give a ⭐️ if this project helped you!
         <td>{ allOf: [ T[0], T[1], ... ] }</td>
     </tr>
     <tr>
-        <td>S.raw(custom: any)</td>
+        <td>S.raw(values: any)</td>
         <td>
             <a href="docs/BaseSchema.md">BaseSchema</a>&lt;any&gt;
         </td>
-        <td>Custom schema</td>
-        <td>{ ...custom }</td>
+        <td>Set custom schema values (For Swagger definitions for example)</td>
+        <td>{ ...values }</td>
+    </tr>
+    <tr>
+        <td>S.custom(...validators: (value: T) => boolean)</td>
+        <td><a href="docs/BaseSchema.md">BaseSchema</a>&lt;any&gt;</td>
+        <td>Add custom validation functions to schema. Supported by AJV custom keyword</td>
+        <td>{ custom: [] } Not standard schema key (Used by AJV)</td>
     </tr>
 </table>
 

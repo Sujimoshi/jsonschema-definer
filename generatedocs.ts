@@ -25,18 +25,17 @@ class Entity {
   }
 
   typeName(typeObj) {
-    const map = {
+    return {
       intrinsic: () => typeObj.name,
       reference: () => typeObj.name,
-      tuple: () => '[' + typeObj.elements.map(t => this.typeName(t)).join(', ') + ']', //?
+      tuple: () => '[' + typeObj.elements.map(t => this.typeName(t)).join(', ') + ']',
       union: () => typeObj.types.map(t => this.typeName(t)).join(' | '),
       conditional: () => `${this.typeName(typeObj.trueType)} | ${this.typeName(typeObj.falseType)}`,
       typeParameter: () => typeObj.constraint ? this.typeName(typeObj.constraint) : typeObj.name,
       array: () => `${this.typeName(typeObj.elementType)}[]`,
       unknown: () => typeObj.name,
       intersection: () => typeObj.types.map(t => this.typeName(t)).join(' & ')
-    }
-    return map[typeObj.type]()
+    }[typeObj.type]()
   }
 
   parameters(params = []) {
@@ -90,7 +89,7 @@ function main() {
         `# ${cls.docs.name} ${cls.extends()}`,
         '',
         '## Methods',
-        '----',
+        '',
         ...cls.methods()
       )
     })
