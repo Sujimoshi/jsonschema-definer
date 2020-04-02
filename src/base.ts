@@ -1,5 +1,6 @@
 import { Schema, Class } from '.'
 import Ajv, { ErrorObject } from 'ajv'
+import md5 from 'md5'
 
 export type Enumerable = boolean | null | string | number | Record<string, any> | Array<any>
 
@@ -23,12 +24,16 @@ export interface BaseJsonSchema {
   if?: Schema['plain']
   then?: Schema['plain']
   else?: Schema['plain']
-  instanceOf?: string
+  custom?: string[]
 }
 
+type Validator = (value: any, full: any, schema: Schema['plain'], path: string) => boolean
+
 export default class BaseSchema<T = any, R extends boolean = true, S extends BaseJsonSchema = Readonly<BaseJsonSchema>> {
-  static ajv = new Ajv().addKeyword('instanceOf', {
-    validate: (value: string, data: any) => value === data.constructor.name
+  static validators: Record<string, Validator> = {}
+  static ajv = new Ajv().addKeyword('custom', {
+    validate: (value: string[], data: any, schema: Schema['plain'], path: string, full: any) =>
+      value.every(key => BaseSchema.validators[key](data, full, schema, path))
   })
 
   readonly type: T
@@ -44,7 +49,26 @@ export default class BaseSchema<T = any, R extends boolean = true, S extends Bas
   }
 
   /**
+   * Add custom validation functions.
+   * Since custom validators didn't supported by JSON Schema, I used AJV custom keywords to add such posibility
+   *
+   * @param funcs - validators
+   *
+   * @returns {this}
+   */
+  custom (...validators: Validator[]) {
+    const keys = validators.map(validator => {
+      const hash = md5(validator.toString())
+      BaseSchema.validators[hash] = validator
+      return hash
+    })
+    return this.copyWith({ plain: { custom: [...this.plain.custom || [], ...keys] } })
+  }
+
+  /**
    * It defines a URI for the schema, and the base URI that other URI references within the schema are resolved against.
+   *
+   * @example { $id: "string" }
    *
    * @reference https://json-schema.org/latest/json-schema-core.html#id-keyword
    *
@@ -58,6 +82,8 @@ export default class BaseSchema<T = any, R extends boolean = true, S extends Bas
   /**
    * The value must be a valid id e.g. #properties/foo
    *
+   * @example { $ref: "string" }
+   *
    * @param {string} ref
    * @returns {this}
    */
@@ -68,6 +94,8 @@ export default class BaseSchema<T = any, R extends boolean = true, S extends Bas
   /**
    * Set $schema property
    *
+   * @example { $schema: "string" }
+   *
    * @param {string} $schema
    */
   schema ($schema: string) {
@@ -76,6 +104,8 @@ export default class BaseSchema<T = any, R extends boolean = true, S extends Bas
 
   /**
    * It can be used to decorate a user interface with information about the data produced by this user interface. A title will preferably be short.
+   *
+   * @example { title: "string" }
    *
    * @reference https://json-schema.org/latest/json-schema-validation.html#rfc.section.10.1
    *
@@ -91,6 +121,8 @@ export default class BaseSchema<T = any, R extends boolean = true, S extends Bas
    * produced by this user interface. A description provides explanation about
    * the purpose of the instance described by the schema.
    *
+   * @example { description: "string" }
+   *
    * @reference https://json-schema.org/latest/json-schema-validation.html#rfc.section.10.1
    *
    * @param {string} description
@@ -104,6 +136,8 @@ export default class BaseSchema<T = any, R extends boolean = true, S extends Bas
    * The value of this keyword MUST be an array.
    * There are no restrictions placed on the values within the array.
    *
+   * @example { examples: [ ... ] }
+   *
    * @reference https://json-schema.org/latest/json-schema-validation.html#rfc.section.10.4
    *
    * @param {any[]} examples
@@ -115,6 +149,8 @@ export default class BaseSchema<T = any, R extends boolean = true, S extends Bas
 
   /**
    * There are no restrictions placed on the value of this keyword.
+   *
+   * @example { default: ... }
    *
    * @reference https://json-schema.org/latest/json-schema-validation.html#rfc.section.10.2
    *
@@ -128,6 +164,8 @@ export default class BaseSchema<T = any, R extends boolean = true, S extends Bas
   /**
    * The "definitions" keywords provides a standardized location for schema authors to inline re-usable JSON Schemas into a more general schema.
    * There are no restrictions placed on the values within the array.
+   *
+   * @example { definitions: { [name]: definition } }
    *
    * @reference https://json-schema.org/latest/json-schema-validation.html#rfc.section.9
    *
@@ -147,6 +185,8 @@ export default class BaseSchema<T = any, R extends boolean = true, S extends Bas
    * - S.number().raw({ nullable:true })
    * - S.string().format('date').raw({ formatMaximum: '2020-01-01' })
    *
+   * @example { somethingCustom: 'value' }
+   *
    * @reference https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.3.3
    *
    * @param {string} fragment an arbitrary JSON Schema to inject
@@ -158,6 +198,8 @@ export default class BaseSchema<T = any, R extends boolean = true, S extends Bas
 
   /**
    * The value of this keyword MUST be an array. This array SHOULD have at least one element. Elements in the array SHOULD be unique.
+   *
+   * @example { enum: [ 'string' ] }
    *
    * @reference https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.1.2
    *
@@ -171,6 +213,8 @@ export default class BaseSchema<T = any, R extends boolean = true, S extends Bas
   /**
    * The value of this keyword MAY be of any type, including null.
    *
+   * @example { const: 'some' }
+   *
    * @reference https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.1.3
    *
    * @param value
@@ -182,6 +226,8 @@ export default class BaseSchema<T = any, R extends boolean = true, S extends Bas
 
   /**
    * It  MUST be a non-empty array. Each item of the array MUST be a valid JSON Schema.
+   *
+   * @example { anyOf: [ {} ] }
    *
    * @reference https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.7.3
    *
@@ -195,6 +241,8 @@ export default class BaseSchema<T = any, R extends boolean = true, S extends Bas
   /**
    * It MUST be a non-empty array. Each item of the array MUST be a valid JSON Schema.
    *
+   * @example { allOf: [ {} ] }
+   *
    * @reference https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.7.1
    *
    * @param {array} schemas
@@ -207,6 +255,8 @@ export default class BaseSchema<T = any, R extends boolean = true, S extends Bas
   /**
    * It MUST be a non-empty array. Each item of the array MUST be a valid JSON Schema.
    *
+   * @example { oneOf: [ {} ] }
+   *
    * @reference https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.7.2
    *
    * @param {array} schemas
@@ -218,6 +268,8 @@ export default class BaseSchema<T = any, R extends boolean = true, S extends Bas
 
   /**
    * It MUST be a valid JSON Schema.
+   *
+   * @example { not: {} }
    *
    * @param {BaseSchema} not
    * @returns {this}

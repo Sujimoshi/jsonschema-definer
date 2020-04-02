@@ -1,7 +1,7 @@
 # StringSchema extends BaseSchema
 
 ## Methods
-----
+
 ### λ contentEncoding
 
 **@signature**

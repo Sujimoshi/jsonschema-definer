@@ -1,7 +1,7 @@
 # SchemaFactory extends BaseSchema
 
 ## Methods
-----
+
 ### λ any
 
 **@signature**
@@ -24,7 +24,11 @@ array(): ArraySchema
 
 **@description** Create ArraySchema
 
-**@example** { "type": "array" }
+**@example**
+```ts
+{ "type": "array" }
+```
+
 
 
 ---
@@ -37,7 +41,11 @@ boolean(): BaseSchema
 
 **@description** Create BooleanSchema
 
-**@example** { "type": "boolean" }
+**@example**
+```ts
+{ "type": "boolean" }
+```
+
 
 
 ---
@@ -45,10 +53,10 @@ boolean(): BaseSchema
 
 **@signature**
 ```ts
-instanceOf(Class: Class): BaseSchema
+instanceOf(Type: Class): BaseSchema
 ```
 
-**@description** Check the instance of of provadied value. Use ajv custom keywords. Notice: It compare using ObjectInstance.constructor.name and Object.name
+**@description** Check the type of the provided value. Used custom ajv keyword.
 
 
 
@@ -62,7 +70,11 @@ integer(): NumericSchema
 
 **@description** Create NumericSchema(integer)
 
-**@example** { "type": "integer" }
+**@example**
+```ts
+{ "type": "integer" }
+```
+
 
 
 ---
@@ -75,7 +87,11 @@ list(items: BaseSchema): ArraySchema
 
 **@description** Create ArraySchema
 
-**@example** { "type": "array", "items": { ... } }
+**@example**
+```ts
+{ "type": "array", "items": { ... } }
+```
+
 
 
 ---
@@ -88,7 +104,11 @@ null(): BaseSchema
 
 **@description** Create NullSchema
 
-**@example** { "type": "null" }
+**@example**
+```ts
+{ "type": "null" }
+```
+
 
 
 ---
@@ -101,7 +121,11 @@ number(): NumericSchema
 
 **@description** Create NumericSchema(number)
 
-**@example** { "type": "number" }
+**@example**
+```ts
+{ "type": "number" }
+```
+
 
 
 ---
@@ -114,7 +138,11 @@ object(): ObjectSchema
 
 **@description** Create ObjectSchema
 
-**@example** { "type": "object" }
+**@example**
+```ts
+{ "type": "object" }
+```
+
 
 
 ---
@@ -127,7 +155,11 @@ shape(props: Record, additional: boolean): ObjectSchema
 
 **@description** Create ObjectSchema
 
-**@example** { "type": "object", "properties": { ... }, "additionalProperties": false }
+**@example**
+```ts
+{ "type": "object", "properties": { ... }, "additionalProperties": false }
+```
+
 
 
 ---
@@ -140,7 +172,11 @@ string(): StringSchema
 
 **@description** Create StringSchema
 
-**@example** { "type": "string" }
+**@example**
+```ts
+{ "type": "string" }
+```
+
 
 
 ---

@@ -132,15 +132,20 @@ export class SchemaFactory extends BaseSchema<Enumerable> {
   }
 
   /**
-   * Check the instance of of provadied value. Use ajv custom keywords. Notice: It compare using ObjectInstance.constructor.name and Object.name
+   * Check the type of the provided value. Used custom ajv keyword.
    *
-   * @param {Class} Class
+   * @param {Class} Type
    */
-  instanceOf <P extends Class> (Class: P) {
-    return new BaseSchema<InstanceType<P>>().copyWith({ plain: { instanceOf: Class.name } })
+  instanceOf <P extends Class> (Type: P) {
+    return new BaseSchema<InstanceType<P>>().custom((data: any) => data instanceof Type)
   }
 }
 
 const S = new SchemaFactory()
 
 export default S
+
+S.shape({
+  some: S.instanceOf(Date),
+  any: S.string()
+}).validate({ some: new Date(), any: 'some' })

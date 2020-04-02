@@ -1,15 +1,24 @@
 {
   "name": "jsonschema-definer",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "JSON Schema constructor and validator",
   "main": "dist/index.js",
   "author": "Igor Solomakha <fumo.sujimoshi@gmail.com>",
   "license": "ISC",
+  "keywords": [
+    "json",
+    "schema",
+    "jsonschema",
+    "validation",
+    "builder",
+    "creator",
+    "typescript"
+  ],
   "scripts": {
     "test": "jest",
     "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx",
     "build": "tsc",
-    "docs": "rm -rf docs && typedoc --json docs.json --exclude **/*.test.ts src && tsnd generatedocs.ts"
+    "docs": "rm -rf docs && typedoc --json docs.json --exclude **/*.test.ts src && node generatedocs.js"
   },
   "husky": {
     "hooks": {
@@ -36,7 +45,9 @@
     "typescript": "^3.8.3"
   },
   "dependencies": {
+    "@types/md5": "^2.1.33",
     "ajv": "^6.12.0",
+    "md5": "^2.2.1",
     "ts-toolbelt": "^6.3.6"
   }
 }
