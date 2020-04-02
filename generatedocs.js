@@ -1,30 +1,26 @@
-// @ts-check
-/* eslint-disable */
-import docs from './docs.json'
-import path from 'path'
-import { mkdirSync, rmdirSync, createWriteStream, writeFileSync } from 'fs'
+const docs = require('./docs.json')
+const path = require('path')
+const { mkdirSync, writeFileSync } = require('fs')
 
 mkdirSync('./docs')
 
 class Entity {
-  docs: any
-
-  constructor(docs) {
+  constructor (docs) {
     this.docs = docs
   }
 
   extends () {
-    if(!this.docs.extendedTypes) return ''
+    if (!this.docs.extendedTypes) return ''
     return 'extends ' + this.docs.extendedTypes.map(el => el.name)
   }
 
-  name() {
+  name () {
     if (!this.docs.name) return ''
     const name = this.docs.name.replace(/^"(.*)"$/, '$1')
     return name.charAt(0).toUpperCase() + name.slice(1)
   }
 
-  typeName(typeObj) {
+  typeName (typeObj) {
     return {
       intrinsic: () => typeObj.name,
       reference: () => typeObj.name,
@@ -38,19 +34,21 @@ class Entity {
     }[typeObj.type]()
   }
 
-  parameters(params = []) {
+  parameters (params = []) {
     return params.map(el => `${el.name}: ${this.typeName(el.type)}`).join(', ')
   }
 
-  signature(method) {
+  signature (method) {
     return `${method.name}(${this.parameters(method.parameters)}): ${this.typeName(method.type)}`
   }
 
-  tags(tags = []) {
-    return tags.map(el => `**@${el.tag}** ${el.text}`).join('\n')
+  tags (tags = []) {
+    const example = tags.find(el => el.tag === 'example')
+    const exampleStr = example ? '**@example**\n```ts\n' + example.text + '```\n\n' : ''
+    return exampleStr + tags.filter(el => el.tag !== 'example').map(el => `**@${el.tag}** ${el.text}`).join('\n')
   }
 
-  methods() {
+  methods () {
     return this.group('Method')
       .filter(el => !el.docs.inheritedFrom)
       .map(method => {
@@ -58,7 +56,7 @@ class Entity {
         return [
           `### λ ${method.docs.name}`,
           '',
-          `**@signature**`,
+          '**@signature**',
           '```ts',
           `${this.signature(signature)}`,
           '```',
@@ -72,15 +70,15 @@ class Entity {
       })
   }
 
-  group(name) {
+  group (name) {
     return this.docs.children.filter(el => el.kindString === name).map(el => new Entity(el))
   }
 }
 
-const write = (module, f = 'a') => (...lines) => writeFileSync(path.resolve(__dirname, 'docs', module.name() + 'Schema.md'), lines.join('\n'), { flag: f });
+const write = (module, f = 'a') => (...lines) => writeFileSync(path.resolve(__dirname, 'docs', module.name() + 'Schema.md'), lines.join('\n'), { flag: f })
 const docu = new Entity(docs)
 
-function main() {
+function main () {
   docu.group('Module').map(module => {
     write(module, 'w')()
 

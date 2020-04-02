@@ -1,7 +1,7 @@
 # BaseSchema 
 
 ## Methods
-----
+
 ### λ allOf
 
 **@signature**
@@ -10,6 +10,11 @@ allOf(schemas: BaseSchema[]): this & BaseSchema
 ```
 
 **@description** It MUST be a non-empty array. Each item of the array MUST be a valid JSON Schema.
+
+**@example**
+```ts
+{ allOf: [ {} ] }
+```
 
 **@reference** https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.7.1
 
@@ -24,6 +29,11 @@ anyOf(schemas: BaseSchema[]): this & BaseSchema
 
 **@description** It  MUST be a non-empty array. Each item of the array MUST be a valid JSON Schema.
 
+**@example**
+```ts
+{ anyOf: [ {} ] }
+```
+
 **@reference** https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.7.3
 
 
@@ -36,6 +46,11 @@ const(value: T): this & BaseSchema
 ```
 
 **@description** The value of this keyword MAY be of any type, including null.
+
+**@example**
+```ts
+{ const: 'some' }
+```
 
 **@reference** https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.1.3
 
@@ -53,6 +68,19 @@ copyWith(modifyObject: Partial): this
 
 
 ---
+### λ custom
+
+**@signature**
+```ts
+custom(validators: Validator[]): this
+```
+
+**@description** Add custom validation functions.
+Since custom validators didn't supported by JSON Schema, I used AJV custom keywords to add such posibility
+
+
+
+---
 ### λ default
 
 **@signature**
@@ -61,6 +89,11 @@ default(def: T): this
 ```
 
 **@description** There are no restrictions placed on the value of this keyword.
+
+**@example**
+```ts
+{ default: ... }
+```
 
 **@reference** https://json-schema.org/latest/json-schema-validation.html#rfc.section.10.2
 
@@ -75,6 +108,11 @@ definition(name: string, definition: BaseSchema): this
 
 **@description** The "definitions" keywords provides a standardized location for schema authors to inline re-usable JSON Schemas into a more general schema.
 There are no restrictions placed on the values within the array.
+
+**@example**
+```ts
+{ definitions: { [name]: definition } }
+```
 
 **@reference** https://json-schema.org/latest/json-schema-validation.html#rfc.section.9
 
@@ -91,6 +129,11 @@ description(description: string): this
 produced by this user interface. A description provides explanation about
 the purpose of the instance described by the schema.
 
+**@example**
+```ts
+{ description: "string" }
+```
+
 **@reference** https://json-schema.org/latest/json-schema-validation.html#rfc.section.10.1
 
 
@@ -103,6 +146,11 @@ enum(values: T[]): this & BaseSchema
 ```
 
 **@description** The value of this keyword MUST be an array. This array SHOULD have at least one element. Elements in the array SHOULD be unique.
+
+**@example**
+```ts
+{ enum: [ 'string' ] }
+```
 
 **@reference** https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.1.2
 
@@ -118,6 +166,11 @@ examples(examples: T[]): this
 **@description** The value of this keyword MUST be an array.
 There are no restrictions placed on the values within the array.
 
+**@example**
+```ts
+{ examples: [ ... ] }
+```
+
 **@reference** https://json-schema.org/latest/json-schema-validation.html#rfc.section.10.4
 
 
@@ -130,6 +183,11 @@ id($id: string): this
 ```
 
 **@description** It defines a URI for the schema, and the base URI that other URI references within the schema are resolved against.
+
+**@example**
+```ts
+{ $id: "string" }
+```
 
 **@reference** https://json-schema.org/latest/json-schema-core.html#id-keyword
 
@@ -172,6 +230,11 @@ not(not: BaseSchema): this
 
 **@description** It MUST be a valid JSON Schema.
 
+**@example**
+```ts
+{ not: {} }
+```
+
 
 
 ---
@@ -183,6 +246,11 @@ oneOf(schemas: BaseSchema[]): this & BaseSchema
 ```
 
 **@description** It MUST be a non-empty array. Each item of the array MUST be a valid JSON Schema.
+
+**@example**
+```ts
+{ oneOf: [ {} ] }
+```
 
 **@reference** https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.7.2
 
@@ -210,6 +278,11 @@ raw(fragment: Record): this
 **@description** Because the differences between JSON Schemas and Open API (Swagger)
 it can be handy to arbitrary modify the schema injecting a fragment
 
+**@example**
+```ts
+{ somethingCustom: 'value' }
+```
+
 **@reference** https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.3.3
 
 
@@ -223,6 +296,11 @@ ref($ref: string): this
 
 **@description** The value must be a valid id e.g. #properties/foo
 
+**@example**
+```ts
+{ $ref: "string" }
+```
+
 
 
 ---
@@ -235,6 +313,11 @@ schema($schema: string): this
 
 **@description** Set $schema property
 
+**@example**
+```ts
+{ $schema: "string" }
+```
+
 
 
 ---
@@ -246,6 +329,11 @@ title(title: string): this
 ```
 
 **@description** It can be used to decorate a user interface with information about the data produced by this user interface. A title will preferably be short.
+
+**@example**
+```ts
+{ title: "string" }
+```
 
 **@reference** https://json-schema.org/latest/json-schema-validation.html#rfc.section.10.1
 

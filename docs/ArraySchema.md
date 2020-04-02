@@ -1,7 +1,7 @@
 # ArraySchema extends BaseSchema
 
 ## Methods
-----
+
 ### λ additionalItems
 
 **@signature**

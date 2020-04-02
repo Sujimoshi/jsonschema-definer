@@ -18,7 +18,7 @@
     "test": "jest",
     "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx",
     "build": "tsc",
-    "docs": "rm -rf docs && typedoc --json docs.json --exclude **/*.test.ts src && tsnd generatedocs.ts"
+    "docs": "rm -rf docs && typedoc --json docs.json --exclude **/*.test.ts src && node generatedocs.js"
   },
   "husky": {
     "hooks": {

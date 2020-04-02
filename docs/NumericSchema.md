@@ -1,7 +1,7 @@
 # NumericSchema extends BaseSchema
 
 ## Methods
-----
+
 ### λ maximum
 
 **@signature**

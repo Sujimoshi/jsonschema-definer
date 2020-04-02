@@ -1,7 +1,7 @@
 # ObjectSchema extends BaseSchema
 
 ## Methods
-----
+
 ### λ additionalProperties
 
 **@signature**
