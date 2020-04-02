@@ -108,12 +108,12 @@ describe('root instance', () => {
   })
 
   it('S.allOf()', () => {
-    const schema = S.allOf(S.string(), S.number())
+    const schema = S.allOf(S.shape({ some: S.string() }), S.shape({ any: S.number() }))
 
-    type CheckSchema = Expect<typeof schema, BaseSchema<string | number>>;
-    type CheckType = Expect<typeof schema.type, string | number>;
-    expect(schema.validate('some')[0]).toEqual(false)
-    expect(schema.validate(999)[0]).toEqual(false)
+    type CheckSchema = Expect<typeof schema, BaseSchema<{ some: string } & { any: number }>>;
+    type CheckType = Expect<typeof schema.type, { some: string } & { any: number }>;
+    expect(schema.validate({ some: 'string', any: 0 })[0]).toEqual(false)
+    expect(schema.validate({ some: 'string' } as any)[0]).toEqual(false)
   })
 
   it('S.not()', () => {
