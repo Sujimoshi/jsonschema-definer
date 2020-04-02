@@ -6,7 +6,7 @@
 
 **@signature**
 ```ts
-allOf(schemas: BaseSchema[]): this & BaseSchema
+allOf(schemas: BaseSchema[]): BaseSchema
 ```
 
 **@description** It MUST be a non-empty array. Each item of the array MUST be a valid JSON Schema.
@@ -24,7 +24,7 @@ allOf(schemas: BaseSchema[]): this & BaseSchema
 
 **@signature**
 ```ts
-anyOf(schemas: BaseSchema[]): this & BaseSchema
+anyOf(schemas: BaseSchema[]): BaseSchema
 ```
 
 **@description** It  MUST be a non-empty array. Each item of the array MUST be a valid JSON Schema.
@@ -42,7 +42,7 @@ anyOf(schemas: BaseSchema[]): this & BaseSchema
 
 **@signature**
 ```ts
-const(value: T): this & BaseSchema
+const(value: T): BaseSchema
 ```
 
 **@description** The value of this keyword MAY be of any type, including null.
@@ -76,7 +76,7 @@ custom(validators: Validator[]): this
 ```
 
 **@description** Add custom validation functions.
-Since custom validators didn't supported by JSON Schema, I used AJV custom keywords to add such posibility
+Since custom validators didn't supported by JSON Schema, I used AJV custom keywords to add such functionality
 
 
 
@@ -142,7 +142,7 @@ the purpose of the instance described by the schema.
 
 **@signature**
 ```ts
-enum(values: T[]): this & BaseSchema
+enum(values: T[]): BaseSchema
 ```
 
 **@description** The value of this keyword MUST be an array. This array SHOULD have at least one element. Elements in the array SHOULD be unique.
@@ -242,7 +242,7 @@ not(not: BaseSchema): this
 
 **@signature**
 ```ts
-oneOf(schemas: BaseSchema[]): this & BaseSchema
+oneOf(schemas: BaseSchema[]): BaseSchema
 ```
 
 **@description** It MUST be a non-empty array. Each item of the array MUST be a valid JSON Schema.

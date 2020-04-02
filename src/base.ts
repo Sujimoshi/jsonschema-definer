@@ -1,8 +1,9 @@
 import { Schema, Class } from '.'
+import { U } from 'ts-toolbelt'
 import Ajv, { ErrorObject } from 'ajv'
 import md5 from 'md5'
 
-export type Enumerable = boolean | null | string | number | Record<string, any> | Array<any>
+export type Any = boolean | null | string | number | Record<string, any> | Array<any> | undefined
 
 export interface BaseJsonSchema {
   [key: string]: any
@@ -15,8 +16,8 @@ export interface BaseJsonSchema {
   examples?: any[]
   default?: any
   definitions?: Record<string, Schema['plain']>
-  enum?: Enumerable
-  const?: Enumerable
+  enum?: Any
+  const?: Any
   oneOf?: Schema['plain'][]
   anyOf?: Schema['plain'][]
   allOf?: Schema['plain'][]
@@ -29,7 +30,7 @@ export interface BaseJsonSchema {
 
 type Validator = (value: any, full: any, schema: Schema['plain'], path: string) => boolean
 
-export default class BaseSchema<T = any, R extends boolean = true, S extends BaseJsonSchema = Readonly<BaseJsonSchema>> {
+export default class BaseSchema<T = Any, R extends boolean = true, S extends BaseJsonSchema = Readonly<BaseJsonSchema>> {
   static validators: Record<string, Validator> = {}
   static ajv = new Ajv().addKeyword('custom', {
     validate: (value: string[], data: any, schema: Schema['plain'], path: string, full: any) =>
@@ -46,23 +47,6 @@ export default class BaseSchema<T = any, R extends boolean = true, S extends Bas
 
   constructor (type?: S['type']) {
     if (type) (this.plain as S).type = type
-  }
-
-  /**
-   * Add custom validation functions.
-   * Since custom validators didn't supported by JSON Schema, I used AJV custom keywords to add such posibility
-   *
-   * @param funcs - validators
-   *
-   * @returns {this}
-   */
-  custom (...validators: Validator[]) {
-    const keys = validators.map(validator => {
-      const hash = md5(validator.toString())
-      BaseSchema.validators[hash] = validator
-      return hash
-    })
-    return this.copyWith({ plain: { custom: [...this.plain.custom || [], ...keys] } })
   }
 
   /**
@@ -206,7 +190,7 @@ export default class BaseSchema<T = any, R extends boolean = true, S extends Bas
    * @param values
    * @returns {this}
    */
-  enum <P extends T> (...values: P[]): this & BaseSchema<P, R> {
+  enum <P extends T[]> (...values: P): BaseSchema<P[number], R> {
     return this.copyWith({ plain: { enum: values } }) as any
   }
 
@@ -220,7 +204,7 @@ export default class BaseSchema<T = any, R extends boolean = true, S extends Bas
    * @param value
    * @returns {this}
    */
-  const <P extends T> (value: P): this & BaseSchema<P, R> {
+  const <P extends T> (value: P): BaseSchema<P, R> {
     return this.copyWith({ plain: { const: value } }) as any
   }
 
@@ -234,7 +218,7 @@ export default class BaseSchema<T = any, R extends boolean = true, S extends Bas
    * @param {array} schemas
    * @returns {this}
    */
-  anyOf <P extends BaseSchema<T>[]> (...schemas: P): this & BaseSchema<P[number]['type'], R> {
+  anyOf <P extends BaseSchema<T>[]> (...schemas: P): BaseSchema<P[number]['type'], R> {
     return this.copyWith({ plain: { anyOf: schemas.map(schema => schema.plain) } }) as any
   }
 
@@ -248,7 +232,7 @@ export default class BaseSchema<T = any, R extends boolean = true, S extends Bas
    * @param {array} schemas
    * @returns {this}
    */
-  allOf <P extends BaseSchema<T>[]> (...schemas: P): this & BaseSchema<P[number]['type'], R> {
+  allOf <P extends BaseSchema<T>[]> (...schemas: P): BaseSchema<U.IntersectOf<P[number]['type']>, R> {
     return this.copyWith({ plain: { allOf: schemas.map(schema => schema.plain) } }) as any
   }
 
@@ -262,7 +246,7 @@ export default class BaseSchema<T = any, R extends boolean = true, S extends Bas
    * @param {array} schemas
    * @returns {this}
    */
-  oneOf <P extends BaseSchema<T>[]> (...schemas: P): this & BaseSchema<P[number]['type'], R> {
+  oneOf <P extends BaseSchema<T>[]> (...schemas: P): BaseSchema<P[number]['type'], R> {
     return this.copyWith({ plain: { oneOf: schemas.map(schema => schema.plain) } }) as any
   }
 
@@ -274,7 +258,7 @@ export default class BaseSchema<T = any, R extends boolean = true, S extends Bas
    * @param {BaseSchema} not
    * @returns {this}
    */
-  not <P extends BaseSchema> (not: P): this {
+  not <P extends BaseSchema> (not: P) {
     return this.copyWith({ plain: { not: not.plain } })
   }
 
@@ -312,6 +296,23 @@ export default class BaseSchema<T = any, R extends boolean = true, S extends Bas
    */
   ifThenElse (ifClause: BaseSchema, thenClause: BaseSchema, elseClause: BaseSchema) {
     return this.copyWith({ plain: { if: ifClause.plain, then: thenClause.plain, else: elseClause.plain } })
+  }
+
+  /**
+   * Add custom validation functions.
+   * Since custom validators didn't supported by JSON Schema, I used AJV custom keywords to add such functionality
+   *
+   * @param funcs - validators
+   *
+   * @returns {this}
+   */
+  custom (...validators: Validator[]) {
+    const keys = validators.map(validator => {
+      const hash = md5(validator.toString())
+      BaseSchema.validators[hash] = validator
+      return hash
+    })
+    return this.copyWith({ plain: { custom: [...this.plain.custom || [], ...keys] } })
   }
 
   /**

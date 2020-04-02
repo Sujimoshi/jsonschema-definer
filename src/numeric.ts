@@ -9,7 +9,7 @@ export interface NumericJsonSchema extends BaseJsonSchema {
   multipleOf?: number
 }
 
-export default class NumericSchema<R extends boolean = true> extends BaseSchema<number, R, Readonly<NumericJsonSchema>> {
+export default class NumericSchema<T extends number = number, R extends boolean = true> extends BaseSchema<T, R, Readonly<NumericJsonSchema>> {
   constructor (type: NumericJsonSchema['type']) {
     super(type)
   }
@@ -51,7 +51,7 @@ export default class NumericSchema<R extends boolean = true> extends BaseSchema<
    * Make schema optional in {ObjectSchema}
    * @returns {NumericSchema}
    */
-  optional (): NumericSchema<false> {
+  optional (): NumericSchema<T, false> {
     return this.copyWith({ isRequired: false }) as any
   }
 }

@@ -10,7 +10,7 @@ export interface StringJsonSchema extends BaseJsonSchema {
   contentEncoding?: string
 }
 
-export default class StringSchema<R extends boolean = true> extends BaseSchema<string, R, Readonly<StringJsonSchema>> {
+export default class StringSchema<T extends string = string, R extends boolean = true> extends BaseSchema<T, R, Readonly<StringJsonSchema>> {
   constructor () {
     super('string')
   }
@@ -91,7 +91,7 @@ export default class StringSchema<R extends boolean = true> extends BaseSchema<s
    * Make schema optional in {ObjectSchema}
    * @returns {StringSchema}
    */
-  optional (): StringSchema<false> {
+  optional (): StringSchema<T, false> {
     return this.copyWith({ isRequired: false }) as any
   }
 }

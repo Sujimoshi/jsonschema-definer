@@ -2,10 +2,10 @@ import StringSchema from './string'
 import NumericSchema from './numeric'
 import ArraySchema from './array'
 import ObjectSchema from './object'
-import BaseSchema, { Enumerable } from './base'
+import BaseSchema from './base'
 import { O } from 'ts-toolbelt'
 
-export type Class<T = any> = { new (): T, prototype: T, name: string }
+export type Class<T = any> = { new (): T, prototype: T }
 
 export type Optional<T extends object> = O.Optional<T, O.SelectKeys<T, undefined>>
 
@@ -16,9 +16,9 @@ export type Schema =
   | ArraySchema
   | ObjectSchema
 
-export { BaseSchema, StringSchema, NumericSchema, ArraySchema, ObjectSchema, Enumerable }
+export { BaseSchema, StringSchema, NumericSchema, ArraySchema, ObjectSchema }
 
-export class SchemaFactory extends BaseSchema<Enumerable> {
+export class SchemaFactory extends BaseSchema {
   /**
    * Create an empty schema
    *
@@ -144,8 +144,3 @@ export class SchemaFactory extends BaseSchema<Enumerable> {
 const S = new SchemaFactory()
 
 export default S
-
-S.shape({
-  some: S.instanceOf(Date),
-  any: S.string()
-}).validate({ some: new Date(), any: 'some' })

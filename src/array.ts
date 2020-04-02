@@ -11,7 +11,7 @@ export interface ArrayJsonSchema extends BaseJsonSchema {
   items?: Schema['plain'] | Schema['plain'][]
 }
 
-export default class ArraySchema<T extends any = any, R extends boolean = true> extends BaseSchema<T[], R, Readonly<ArrayJsonSchema>> {
+export default class ArraySchema<T = any, R extends boolean = true> extends BaseSchema<T[], R, Readonly<ArrayJsonSchema>> {
   constructor () {
     super('array')
   }
