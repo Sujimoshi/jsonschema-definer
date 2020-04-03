@@ -14,13 +14,13 @@
 
 This package provides simple, well typed API for creating and validating JSON Schemas
 
-## Install
+## 🔥 Install
 
 ```sh
 npm install jsonschema-definer
 ```
 
-## Usage
+## 👌 Usage
 This package was inspired by `fluent-schema` and `prop-types`, and is used to create and validate JSON Schema. It was written in typescript and provide a lot of usefull info from typings, such as infering interface types from schema. Here is an example:
 
 ```ts
@@ -63,130 +63,111 @@ console.log(UserSchema.valueOf())
 
 ```
 
-## Show your support
+## ⭐️ Show your support
 
 Give a ⭐️ if this project helped you!
 
-## Documentation
+## 📚 Documentation
 
-### S: SchemaFactory extends <a href="docs/BaseSchema.md">BaseSchema</a>
+Full documentation available [here](https://sujimoshi.github.io/jsonschema-definer/)
+
+### Main exported variable S: <a href="https://sujimoshi.github.io/jsonschema-definer/classes/schemafactory.html">SchemaFactory</a> extends <a href="https://sujimoshi.github.io/jsonschema-definer/classes/baseschema.html">BaseSchema</a>
 
 <table>
     <tr>
         <th>Method</th>
-        <th>Return</th>
         <th>Description</th>
         <th>JSON Schema</th>
     </tr>
     <tr>
-        <td>S.any()</td>
-        <td><a href="docs/BaseSchema.md">BaseSchema</a>&lt;any&gt;</td>
+        <td>S.any(): <a href="https://sujimoshi.github.io/jsonschema-definer/classes/baseschema.html">BaseSchema</a></td>
         <td>Correspond to any type</td>
         <td>{ }</td>
     </tr>
     <tr>
-        <td>S.string()</td>
-        <td><a href="docs/StringSchema.md">StringSchema</a>&lt;string&gt;</td>
+        <td>S.string(): <a href="https://sujimoshi.github.io/jsonschema-definer/classes/stringschema.html">StringSchema</a></td>
         <td>For strings validation</td>
         <td>{ "type": "string" }</td>
     </tr>
     <tr>
-        <td>S.number()</td>
-        <td><a href="docs/NumericSchema.md">NumericSchema</a>&lt;number&gt;</td>
+        <td>S.number(): <a href="https://sujimoshi.github.io/jsonschema-definer/classes/numericschema.html">NumericSchema</a></td>
         <td>For float/integer validation</td>
         <td>{ "type": "number" }</td>
     </tr>
     <tr>
-        <td>S.integer()</td>
-        <td><a href="docs/NumericSchema.md">NumericSchema</a>&lt;number&gt;</td>
+        <td>S.integer(): <a href="https://sujimoshi.github.io/jsonschema-definer/classes/numericschema.html">NumericSchema</a></td>
         <td>For integer values validation</td>
         <td>{ "type": "integer" }</td>
     </tr>
     <tr>
-        <td>S.boolean()</td>
-        <td><a href="docs/BaseSchema.md">BaseSchema</a>&lt;boolean&gt;</td>
+        <td>S.boolean(): <a href="https://sujimoshi.github.io/jsonschema-definer/classes/baseschema.html">BaseSchema</a></td>
         <td>For boolean values</td>
         <td>{ "type": "boolean" }</td>
     </tr>
     <tr>
-        <td>S.null()</td>
-        <td><a href="docs/BaseSchema.md">BaseSchema</a>&lt;null&gt;</td>
+        <td>S.null(): <a href="https://sujimoshi.github.io/jsonschema-definer/classes/baseschema.html">BaseSchema</a></td>
         <td>For null value validation</td>
         <td>{ "type": "null" }</td>
     </tr>
     <tr>
-        <td>S.array()</td>
-        <td><a href="docs/ArraySchema.md">ArraySchema</a>&lt;any[]&gt;</td>
-        <td>For arrays</td>
+        <td>S.array(): <a href="https://sujimoshi.github.io/jsonschema-definer/classes/arrayschema.html">ArraySchema</a></td>
+        <td>Array validation</td>
         <td>{ "type": "array" }</td>
     </tr>
     <tr>
-        <td>S.list(itemType: T)</td>
-        <td><a href="docs/ArraySchema.md">ArraySchema</a>&lt;T[]&gt;</td>
-        <td>Validation of lists. Example: S.list(S.string()): ArraySchema&lt;string[]&gt;&gt;</td>
+        <td>S.list(itemType: T): <a href="https://sujimoshi.github.io/jsonschema-definer/classes/arrayschema.html">ArraySchema</a></td>
+        <td>Validation of lists. Example: S.list(S.string()): ArraySchema</td>
         <td>{ "type": "array", "items": { ... } }</td>
     </tr>
     <tr>
-        <td>S.object()</td>
-        <td><a href="docs/ObjectSchema.md">ObjectSchema</a>&lt;{}&gt;</td>
+        <td>S.object(): <a href="https://sujimoshi.github.io/jsonschema-definer/classes/objectschema.html">ObjectSchema</a></td>
         <td>Validation of object</td>
         <td>{ "type": "object" }</td>
     </tr>
     <tr>
-        <td>S.shape({ key: Schema }: T)</td>
-        <td><a href="docs/ObjectSchema.md">ObjectSchema</a>&lt;T&gt;</td>
+        <td>S.shape({ key: Schema }: T): <a href="https://sujimoshi.github.io/jsonschema-definer/classes/objectschema.html">ObjectSchema</a></td>
         <td>Validation of objects</td>
         <td>{ "type": "object", properties: T, additionalProperties: false } }</td>
     </tr>
     <tr>
-        <td>S.instanceOf(type: T)</td>
-        <td><a href="docs/BaseSchema.md">BaseSchema</a>&lt;T&gt;</td>
+        <td>S.instanceOf(type: T): <a href="https://sujimoshi.github.io/jsonschema-definer/classes/baseschema.html">BaseSchema</a></td>
         <td>For validating instanceOf data. (Custom keyword used) </td>
         <td>{ instanceOf: T.name } </td>
     </tr>
     <tr>
-        <td>S.enum(...constants: T[])</td>
-        <td><a href="docs/BaseSchema.md">BaseSchema</a>&lt;T[0] | T[1] | ...&gt;</td>
+        <td>S.enum(...constants: T[]): <a href="https://sujimoshi.github.io/jsonschema-definer/classes/baseschema.html">BaseSchema</a></td>
         <td>Enumerable schema</td>
         <td>{ enum: [ T[0], T[1] ] }</td>
     </tr>
     <tr>
-        <td>S.const(constant: T)</td>
-        <td><a href="docs/BaseSchema.md">BaseSchema</a>&lt;T&gt;</td>
+        <td>S.const(constant: T): <a href="https://sujimoshi.github.io/jsonschema-definer/classes/baseschema.html">BaseSchema</a></td>
         <td>Constant value</td>
         <td>{ const: T }</td>
     </tr>
     <tr>
-        <td>S.anyOf(...schemas: BaseSchema&lt;T&gt;[])</td>
-        <td><a href="docs/BaseSchema.md">BaseSchema</a>&lt;T[0] | T[1] | ...&gt;</td>
+        <td>S.anyOf(...schemas: BaseSchema[]): <a href="https://sujimoshi.github.io/jsonschema-definer/classes/baseschema.htmld">BaseSchema</a></td>
         <td>Any (one or more) of given types</td>
         <td>{ anyOf: [ T[0], T[1], ... ] }</td>
     </tr>
     <tr>
-        <td>S.oneOf(...schemas: BaseSchema&lt;T&gt;[])</td>
-        <td><a href="docs/BaseSchema.md">BaseSchema</a>&lt;T[0] | T[1] | ...&gt;</td>
+        <td>S.oneOf(...schemas: BaseSchema[]): <a href="https://sujimoshi.github.io/jsonschema-definer/classes/baseschema.html">BaseSchema</a></td>
         <td>Value shoud correspond to ONE of given types</td>
         <td>{ oneOf: [ T[0], T[1], ... ] }</td>
     </tr>
     <tr>
-        <td>S.allOf(...schemas: BaseSchema&lt;T&gt;[])</td>
-        <td><a href="docs/BaseSchema.md">BaseSchema</a>&lt;T[0] &amp; T[1] &amp; ...&gt;</td>
+        <td>S.allOf(...schemas: BaseSchema[]): <a href="https://sujimoshi.github.io/jsonschema-definer/classes/baseschema.html">BaseSchema</a></td>
         <td>Value should correspond to ALL of given type</td>
         <td>{ allOf: [ T[0], T[1], ... ] }</td>
     </tr>
     <tr>
-        <td>S.raw(values: any)</td>
-        <td>
-            <a href="docs/BaseSchema.md">BaseSchema</a>&lt;any&gt;
-        </td>
+        <td>S.raw(values: any): <a href="https://sujimoshi.github.io/jsonschema-definer/classes/baseschema.html">BaseSchema</a></td>
         <td>Set custom schema values (For Swagger definitions for example)</td>
         <td>{ ...values }</td>
     </tr>
     <tr>
-        <td>S.custom(...validators: (value: T) => boolean)</td>
-        <td><a href="docs/BaseSchema.md">BaseSchema</a>&lt;any&gt;</td>
+        <td>S.custom(...validators: (value: T) => boolean): <a href="https://sujimoshi.github.io/jsonschema-definer/classes/baseschema.html">BaseSchema</a></td>
         <td>Add custom validation functions to schema. Supported by AJV custom keyword</td>
-        <td>{ custom: [] } Not standard schema key (Used by AJV)</td>
+        <td>Does not supported by standard JSON Schema (Ajv support)</td>
     </tr>
 </table>
 

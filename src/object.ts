@@ -13,7 +13,6 @@ export interface ObjectJsonSchema extends BaseJsonSchema {
   maxProperties?: number
   dependencies?: Record<string, string[] | Schema['plain']>
   patternProperties?: Record<string, Schema['plain']>
-  instanceof?: string
 }
 
 export default class ObjectSchema<T extends Record<string, any> = {}, R extends boolean = true> extends BaseSchema<T, R, Readonly<ObjectJsonSchema>> {
