@@ -78,12 +78,12 @@
 					</a>
 				</p>
 				<p>This package provides simple, well typed API for creating and validating JSON Schemas</p>
-				<a href="#install" id="install" style="color: inherit; text-decoration: none;">
-					<h2>Install</h2>
+				<a href="#🔥-install" id="🔥-install" style="color: inherit; text-decoration: none;">
+					<h2>🔥 Install</h2>
 				</a>
 				<pre><code class="language-sh">npm install jsonschema-definer</code></pre>
-				<a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
-					<h2>Usage</h2>
+				<a href="#👌-usage" id="👌-usage" style="color: inherit; text-decoration: none;">
+					<h2>👌 Usage</h2>
 				</a>
 				<p>This package was inspired by <code>fluent-schema</code> and <code>prop-types</code>, and is used to create and validate JSON Schema. It was written in typescript and provide a lot of usefull info from typings, such as infering interface types from schema. Here is an example:</p>
 				<pre><code class="language-ts"><span class="hljs-keyword">import</span> S <span class="hljs-keyword">from</span> <span class="hljs-string">'jsonschema-definer'</span>
@@ -123,132 +123,112 @@
 <span class="hljs-comment">// Or get plain JSON Schema using .valueOf()</span>
 <span class="hljs-built_in">console</span>.log(UserSchema.valueOf())
 </code></pre>
-				<a href="#show-your-support" id="show-your-support" style="color: inherit; text-decoration: none;">
-					<h2>Show your support</h2>
+				<a href="#⭐️-show-your-support" id="⭐️-show-your-support" style="color: inherit; text-decoration: none;">
+					<h2>⭐️ Show your support</h2>
 				</a>
 				<p>Give a ⭐️ if this project helped you!</p>
-				<a href="#documentation" id="documentation" style="color: inherit; text-decoration: none;">
-					<h2>Documentation</h2>
+				<a href="#📚-documentation" id="📚-documentation" style="color: inherit; text-decoration: none;">
+					<h2>📚 Documentation</h2>
 				</a>
-				<a href="#s-schemafactory-extends-a-hrefdocsbaseschemamdbaseschemaa" id="s-schemafactory-extends-a-hrefdocsbaseschemamdbaseschemaa" style="color: inherit; text-decoration: none;">
-					<h3>S: SchemaFactory extends <a href="docs/BaseSchema.md">BaseSchema</a></h3>
+				<p>Full documentation available <a href="https://sujimoshi.github.io/jsonschema-definer/">here</a></p>
+				<a href="#main-exported-variable-s-a-hrefhttpssujimoshigithubiojsonschema-definerclassesschemafactoryhtmlschemafactorya-extends-a-hrefhttpssujimoshigithubiojsonschema-definerclassesbaseschemahtmlbaseschemaa" id="main-exported-variable-s-a-hrefhttpssujimoshigithubiojsonschema-definerclassesschemafactoryhtmlschemafactorya-extends-a-hrefhttpssujimoshigithubiojsonschema-definerclassesbaseschemahtmlbaseschemaa" style="color: inherit; text-decoration: none;">
+					<h3>Main exported variable S: <a href="https://sujimoshi.github.io/jsonschema-definer/classes/schemafactory.html">SchemaFactory</a> extends <a href="https://sujimoshi.github.io/jsonschema-definer/classes/baseschema.html">BaseSchema</a></h3>
 				</a>
 				<table>
 					<tr>
 						<th>Method</th>
-						<th>Return</th>
 						<th>Description</th>
 						<th>JSON Schema</th>
 					</tr>
 					<tr>
-						<td>S.any()</td>
-						<td><a href="docs/BaseSchema.md">BaseSchema</a>&lt;any&gt;</td>
+						<td>S.any(): <a href="https://sujimoshi.github.io/jsonschema-definer/classes/baseschema.html">BaseSchema</a></td>
 						<td>Correspond to any type</td>
 						<td>{ }</td>
 					</tr>
 					<tr>
-						<td>S.string()</td>
-						<td><a href="docs/StringSchema.md">StringSchema</a>&lt;string&gt;</td>
+						<td>S.string(): <a href="https://sujimoshi.github.io/jsonschema-definer/classes/stringschema.html">StringSchema</a></td>
 						<td>For strings validation</td>
 						<td>{ "type": "string" }</td>
 					</tr>
 					<tr>
-						<td>S.number()</td>
-						<td><a href="docs/NumericSchema.md">NumericSchema</a>&lt;number&gt;</td>
+						<td>S.number(): <a href="https://sujimoshi.github.io/jsonschema-definer/classes/numericschema.html">NumericSchema</a></td>
 						<td>For float/integer validation</td>
 						<td>{ "type": "number" }</td>
 					</tr>
 					<tr>
-						<td>S.integer()</td>
-						<td><a href="docs/NumericSchema.md">NumericSchema</a>&lt;number&gt;</td>
+						<td>S.integer(): <a href="https://sujimoshi.github.io/jsonschema-definer/classes/numericschema.html">NumericSchema</a></td>
 						<td>For integer values validation</td>
 						<td>{ "type": "integer" }</td>
 					</tr>
 					<tr>
-						<td>S.boolean()</td>
-						<td><a href="docs/BaseSchema.md">BaseSchema</a>&lt;boolean&gt;</td>
+						<td>S.boolean(): <a href="https://sujimoshi.github.io/jsonschema-definer/classes/baseschema.html">BaseSchema</a></td>
 						<td>For boolean values</td>
 						<td>{ "type": "boolean" }</td>
 					</tr>
 					<tr>
-						<td>S.null()</td>
-						<td><a href="docs/BaseSchema.md">BaseSchema</a>&lt;null&gt;</td>
+						<td>S.null(): <a href="https://sujimoshi.github.io/jsonschema-definer/classes/baseschema.html">BaseSchema</a></td>
 						<td>For null value validation</td>
 						<td>{ "type": "null" }</td>
 					</tr>
 					<tr>
-						<td>S.array()</td>
-						<td><a href="docs/ArraySchema.md">ArraySchema</a>&lt;any[]&gt;</td>
-						<td>For arrays</td>
+						<td>S.array(): <a href="https://sujimoshi.github.io/jsonschema-definer/classes/arrayschema.html">ArraySchema</a></td>
+						<td>Array validation</td>
 						<td>{ "type": "array" }</td>
 					</tr>
 					<tr>
-						<td>S.list(itemType: T)</td>
-						<td><a href="docs/ArraySchema.md">ArraySchema</a>&lt;T[]&gt;</td>
-						<td>Validation of lists. Example: S.list(S.string()): ArraySchema&lt;string[]&gt;&gt;</td>
+						<td>S.list(itemType: T): <a href="https://sujimoshi.github.io/jsonschema-definer/classes/arrayschema.html">ArraySchema</a></td>
+						<td>Validation of lists. Example: S.list(S.string()): ArraySchema</td>
 						<td>{ "type": "array", "items": { ... } }</td>
 					</tr>
 					<tr>
-						<td>S.object()</td>
-						<td><a href="docs/ObjectSchema.md">ObjectSchema</a>&lt;{}&gt;</td>
+						<td>S.object(): <a href="https://sujimoshi.github.io/jsonschema-definer/classes/objectschema.html">ObjectSchema</a></td>
 						<td>Validation of object</td>
 						<td>{ "type": "object" }</td>
 					</tr>
 					<tr>
-						<td>S.shape({ key: Schema }: T)</td>
-						<td><a href="docs/ObjectSchema.md">ObjectSchema</a>&lt;T&gt;</td>
+						<td>S.shape({ key: Schema }: T): <a href="https://sujimoshi.github.io/jsonschema-definer/classes/objectschema.html">ObjectSchema</a></td>
 						<td>Validation of objects</td>
 						<td>{ "type": "object", properties: T, additionalProperties: false } }</td>
 					</tr>
 					<tr>
-						<td>S.instanceOf(type: T)</td>
-						<td><a href="docs/BaseSchema.md">BaseSchema</a>&lt;T&gt;</td>
+						<td>S.instanceOf(type: T): <a href="https://sujimoshi.github.io/jsonschema-definer/classes/baseschema.html">BaseSchema</a></td>
 						<td>For validating instanceOf data. (Custom keyword used) </td>
 						<td>{ instanceOf: T.name } </td>
 					</tr>
 					<tr>
-						<td>S.enum(...constants: T[])</td>
-						<td><a href="docs/BaseSchema.md">BaseSchema</a>&lt;T[0] | T[1] | ...&gt;</td>
+						<td>S.enum(...constants: T[]): <a href="https://sujimoshi.github.io/jsonschema-definer/classes/baseschema.html">BaseSchema</a></td>
 						<td>Enumerable schema</td>
 						<td>{ enum: [ T[0], T[1] ] }</td>
 					</tr>
 					<tr>
-						<td>S.const(constant: T)</td>
-						<td><a href="docs/BaseSchema.md">BaseSchema</a>&lt;T&gt;</td>
+						<td>S.const(constant: T): <a href="https://sujimoshi.github.io/jsonschema-definer/classes/baseschema.html">BaseSchema</a></td>
 						<td>Constant value</td>
 						<td>{ const: T }</td>
 					</tr>
 					<tr>
-						<td>S.anyOf(...schemas: BaseSchema&lt;T&gt;[])</td>
-						<td><a href="docs/BaseSchema.md">BaseSchema</a>&lt;T[0] | T[1] | ...&gt;</td>
+						<td>S.anyOf(...schemas: BaseSchema[]): <a href="https://sujimoshi.github.io/jsonschema-definer/classes/baseschema.htmld">BaseSchema</a></td>
 						<td>Any (one or more) of given types</td>
 						<td>{ anyOf: [ T[0], T[1], ... ] }</td>
 					</tr>
 					<tr>
-						<td>S.oneOf(...schemas: BaseSchema&lt;T&gt;[])</td>
-						<td><a href="docs/BaseSchema.md">BaseSchema</a>&lt;T[0] | T[1] | ...&gt;</td>
+						<td>S.oneOf(...schemas: BaseSchema[]): <a href="https://sujimoshi.github.io/jsonschema-definer/classes/baseschema.html">BaseSchema</a></td>
 						<td>Value shoud correspond to ONE of given types</td>
 						<td>{ oneOf: [ T[0], T[1], ... ] }</td>
 					</tr>
 					<tr>
-						<td>S.allOf(...schemas: BaseSchema&lt;T&gt;[])</td>
-						<td><a href="docs/BaseSchema.md">BaseSchema</a>&lt;T[0] &amp; T[1] &amp; ...&gt;</td>
+						<td>S.allOf(...schemas: BaseSchema[]): <a href="https://sujimoshi.github.io/jsonschema-definer/classes/baseschema.html">BaseSchema</a></td>
 						<td>Value should correspond to ALL of given type</td>
 						<td>{ allOf: [ T[0], T[1], ... ] }</td>
 					</tr>
 					<tr>
-						<td>S.raw(values: any)</td>
-						<td>
-							<a href="docs/BaseSchema.md">BaseSchema</a>&lt;any&gt;
-						</td>
+						<td>S.raw(values: any): <a href="https://sujimoshi.github.io/jsonschema-definer/classes/baseschema.html">BaseSchema</a></td>
 						<td>Set custom schema values (For Swagger definitions for example)</td>
 						<td>{ ...values }</td>
 					</tr>
 					<tr>
-						<td>S.custom(...validators: (value: T) => boolean)</td>
-						<td><a href="docs/BaseSchema.md">BaseSchema</a>&lt;any&gt;</td>
+						<td>S.custom(...validators: (value: T) => boolean): <a href="https://sujimoshi.github.io/jsonschema-definer/classes/baseschema.html">BaseSchema</a></td>
 						<td>Add custom validation functions to schema. Supported by AJV custom keyword</td>
-						<td>{ custom: [] } Not standard schema key (Used by AJV)</td>
+						<td>Does not supported by standard JSON Schema (Ajv support)</td>
 					</tr>
 				</table>
 				<a href="#🤝-contributing" id="🤝-contributing" style="color: inherit; text-decoration: none;">
@@ -262,14 +242,14 @@
 				<a href="#author" id="author" style="color: inherit; text-decoration: none;">
 					<h2>Author</h2>
 				</a>
-				<p>👤 <strong>Igor Solomakha <a href="mailto:&#102;&#x75;&#109;&#x6f;&#46;&#115;&#117;&#106;&#105;&#x6d;&#x6f;&#115;&#104;&#x69;&#64;&#x67;&#109;&#x61;&#x69;&#108;&#x2e;&#x63;&#111;&#109;">&#102;&#x75;&#109;&#x6f;&#46;&#115;&#117;&#106;&#105;&#x6d;&#x6f;&#115;&#104;&#x69;&#64;&#x67;&#109;&#x61;&#x69;&#108;&#x2e;&#x63;&#111;&#109;</a></strong></p>
+				<p>👤 <strong>Igor Solomakha <a href="mailto:&#102;&#117;&#x6d;&#111;&#x2e;&#x73;&#x75;&#x6a;&#105;&#x6d;&#111;&#x73;&#104;&#x69;&#64;&#x67;&#109;&#97;&#105;&#x6c;&#46;&#x63;&#111;&#109;">&#102;&#117;&#x6d;&#111;&#x2e;&#x73;&#x75;&#x6a;&#105;&#x6d;&#111;&#x73;&#104;&#x69;&#64;&#x67;&#109;&#97;&#105;&#x6c;&#46;&#x63;&#111;&#109;</a></strong></p>
 				<ul>
 					<li>Github: <a href="https://github.com/Sujimoshi">@Sujimoshi</a></li>
 				</ul>
 				<a href="#📝-license" id="📝-license" style="color: inherit; text-decoration: none;">
 					<h2>📝 License</h2>
 				</a>
-				<p>Copyright © 2020 <a href="https://github.com/Sujimoshi">Igor Solomakha <a href="mailto:&#102;&#117;&#x6d;&#x6f;&#x2e;&#x73;&#x75;&#x6a;&#105;&#x6d;&#x6f;&#x73;&#x68;&#105;&#x40;&#x67;&#x6d;&#x61;&#105;&#x6c;&#x2e;&#x63;&#x6f;&#x6d;">&#102;&#117;&#x6d;&#x6f;&#x2e;&#x73;&#x75;&#x6a;&#105;&#x6d;&#x6f;&#x73;&#x68;&#105;&#x40;&#x67;&#x6d;&#x61;&#105;&#x6c;&#x2e;&#x63;&#x6f;&#x6d;</a></a>.<br />
+				<p>Copyright © 2020 <a href="https://github.com/Sujimoshi">Igor Solomakha <a href="mailto:&#x66;&#117;&#109;&#111;&#46;&#115;&#x75;&#106;&#x69;&#x6d;&#111;&#x73;&#104;&#105;&#x40;&#x67;&#x6d;&#x61;&#105;&#108;&#46;&#x63;&#111;&#x6d;">&#x66;&#117;&#109;&#111;&#46;&#115;&#x75;&#106;&#x69;&#x6d;&#111;&#x73;&#104;&#105;&#x40;&#x67;&#x6d;&#x61;&#105;&#108;&#46;&#x63;&#111;&#x6d;</a></a>.<br />
 				This project is <a href="https://www.isc.org/licenses/">ISC</a> licensed.</p>
 				<hr>
 				<p><em>This README was generated with ❤️ by <a href="https://github.com/kefranabg/readme-md-generator">readme-md-generator</a></em></p>
