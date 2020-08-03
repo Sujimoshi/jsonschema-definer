@@ -4,6 +4,8 @@
   "description": "JSON Schema constructor and validator",
   "main": "dist/index.js",
   "author": "Igor Solomakha <fumo.sujimoshi@gmail.com>",
+  "homepage": "https://sujimoshi.github.io/jsonschema-definer/",
+  "repository": "github:Sujimoshi/jsonschema-definer",
   "license": "ISC",
   "keywords": [
     "json",
