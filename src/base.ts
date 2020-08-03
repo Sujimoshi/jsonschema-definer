@@ -316,12 +316,23 @@ export default class BaseSchema<T = Any, R extends boolean = true, S extends Bas
   }
 
   /**
-   * Validate provided data with current schema using ajv
+   * Validate provided data with current schema using ajv, does not throw errors
    *
    * @param {T extends Class ? InstanceType<T> : T} data
    */
   validate (data: T extends Class ? InstanceType<T> : T): [boolean | PromiseLike<any>, ErrorObject[] | null | undefined] {
     return [BaseSchema.ajv.validate(this.valueOf(), data), BaseSchema.ajv.errors]
+  }
+
+  /**
+   * Validate provided data with current schema using ajv, if validation failed function will throw error
+   *
+   * @param {T extends Class ? InstanceType<T> : T} data
+   */
+  ensure (data: T extends Class ? InstanceType<T> : T): T extends Class ? InstanceType<T> : T {
+    const [, err] = this.validate(data)
+    if (err) throw err
+    return data
   }
 
   /**
