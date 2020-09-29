@@ -1,7 +1,7 @@
 import { Schema, Class } from '.'
 import { U } from 'ts-toolbelt'
 import Ajv, { ErrorObject } from 'ajv'
-import md5 from 'md5'
+import { v4 as uuid } from 'uuid'
 
 export type Any = boolean | null | string | number | Record<string, any> | Array<any> | undefined
 
@@ -308,7 +308,7 @@ export default class BaseSchema<T = Any, R extends boolean = true, S extends Bas
    */
   custom (...validators: Validator[]) {
     const keys = validators.map(validator => {
-      const hash = md5(validator.toString())
+      const hash = uuid()
       BaseSchema.validators[hash] = validator
       return hash
     })
