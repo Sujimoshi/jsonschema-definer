@@ -211,11 +211,17 @@ describe('root instance', () => {
   })
 
   it('S.instanceOf()', () => {
-    const schema = S.instanceOf(Date)
+    const schema = S.shape({
+      date: S.instanceOf(Date),
+      number: S.instanceOf(Number)
+    })
 
-    type CheckSchema = Expect<typeof schema, BaseSchema<Date>>;
-    type CheckType = Expect<typeof schema.type, Date>;
-    expect(schema.validate(new Date())[0]).toEqual(true)
+    type CheckSchema = Expect<typeof schema, BaseSchema<{ date:Date, number: Number }>>;
+    type CheckType = Expect<typeof schema.type.date, Date>;
+    type CheckType2 = Expect<typeof schema.type.number, Number>;
+    const [valid, error] = schema.validate({ date: new Date(), number: new Number(10) }) // eslint-disable-line
+    console.log(error)
+    expect(valid).toEqual(true)
   })
 
   it('S.ifThen()', () => {
