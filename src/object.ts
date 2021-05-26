@@ -153,7 +153,7 @@ export default class ObjectSchema<T extends Record<string, any> = {}, R extends 
    *
    * @returns {ObjectSchema}
    */
-  partial (): ObjectSchema<{}, R> {
+  partial (): ObjectSchema<Partial<T>, R> {
     const plain = (function partial (schema: any) {
       for (const key in schema.properties || {}) {
         if (schema.properties[key].type === 'object') {
@@ -165,4 +165,59 @@ export default class ObjectSchema<T extends Record<string, any> = {}, R extends 
     })(this.valueOf())
     return Object.assign(Object.create(this.constructor.prototype), { ...this, plain })
   }
+  
+  /**
+	 * Return new ObjectSchema with omitted fields
+	 *
+	 * @returns {ObjectSchema}
+	 */
+	omit<K extends keyof T>(...keys: K[]): ObjectSchema<Omit<T, K>, R> {
+		const es = new Set(keys as string[]);
+		const { properties, required, ...plain } = this.valueOf();
+		const np = {} as ObjectJsonSchema;
+		for (const key in properties) {
+			if (!es.has(key)) np[key] = properties[key];
+		}
+		(plain.properties as Record<string, unknown>) = np;
+		if (required) {
+			const nrs = [];
+			for (let i = 0; i < required.length; i++) {
+				const r = required[i];
+				if (!es.has(r as any)) nrs.push(r);
+			}
+			if (nrs.length > 0) (plain.required as string[]) = nrs;
+		}
+		return Object.assign(Object.create(this.constructor.prototype), {
+			...this,
+			plain,
+		});
+	}
+
+	/**
+	 * Return new ObjectSchema with picked fields
+	 *
+	 * @returns {ObjectSchema}
+	 */
+	pick<K extends keyof T>(...keys: K[]): ObjectSchema<Pick<T, K>, R> {
+		// const plain = {} as Record<string, unknown>;
+		const { properties = {}, required, ...plain } = this.valueOf();
+		for (const key of keys) {
+			(plain[key as string] as Record<string, unknown>) = properties[
+				key as string
+			];
+		}
+		if (required) {
+			const nrs = [];
+			const ins = new Set(keys as string[]);
+			for (let i = 0; i < required.length; i++) {
+				const r = required[i];
+				if (ins.has(r)) nrs.push(r);
+			}
+			if (nrs.length > 0) (plain.required as string[]) = nrs;
+		}
+		return Object.assign(Object.create(this.constructor.prototype), {
+			...this,
+			plain,
+		});
+	}
 }
