@@ -153,7 +153,7 @@ export default class ObjectSchema<T extends Record<string, any> = {}, R extends 
    *
    * @returns {ObjectSchema}
    */
-  partial (): ObjectSchema<{}, R> {
+  partial (): ObjectSchema<Partial<T>, R> {
     const plain = (function partial (schema: any) {
       for (const key in schema.properties || {}) {
         if (schema.properties[key].type === 'object') {
@@ -165,4 +165,131 @@ export default class ObjectSchema<T extends Record<string, any> = {}, R extends 
     })(this.valueOf())
     return Object.assign(Object.create(this.constructor.prototype), { ...this, plain })
   }
+  
+  
+	/**
+	 * Return new ObjectSchema with omitted fields
+	 *
+	 * @returns {ObjectSchema}
+	 */
+	omit<K extends keyof T>(...keys: K[]): ObjectSchema<Omit<T, K>, R> {
+		const es = new Set(keys as string[]);
+		const plain = { ...this.valueOf() };
+		const { properties, required } = plain;
+		const nps = {} as ObjectJsonSchema;
+		for (const key in properties) {
+			if (!es.has(key)) nps[key] = properties[key];
+		}
+		plain.properties = nps;
+		if (required) {
+			const nrs = [];
+			for (let i = 0; i < required.length; i++) {
+				const r = required[i];
+				if (!es.has(r as any)) nrs.push(r);
+			}
+			if (nrs.length > 0) (plain.required as string[]) = nrs;
+		}
+		return Object.assign(Object.create(this.constructor.prototype), {
+			...this,
+			plain,
+		});
+	}
+
+	/**
+	 * Return new ObjectSchema with picked fields
+	 *
+	 * @returns {ObjectSchema}
+	 */
+	pick<K extends keyof T>(...keys: K[]): ObjectSchema<Pick<T, K>, R> {
+		const plain = { ...this.valueOf() };
+		const { properties, required } = plain;
+		const nps = {} as ObjectJsonSchema;
+		if (properties) {
+			for (const key of keys) {
+				nps[key as keyof ObjectJsonSchema] =
+					properties[key as keyof ObjectJsonSchema];
+			}
+			plain.properties = nps;
+		}
+		if (required) {
+			const nrs = [];
+			const ins = new Set(keys as string[]);
+			for (let i = 0; i < required.length; i++) {
+				const r = required[i];
+				if (ins.has(r)) nrs.push(r);
+			}
+			if (nrs.length > 0) (plain.required as string[]) = nrs;
+		}
+		return Object.assign(Object.create(this.constructor.prototype), {
+			...this,
+			plain,
+		});
+	}
+
+	/**
+	 * Intersections ObjectSchemas
+	 * Return new ObjectSchema with combined fields.
+	 * The new object take precedence for similar properties.
+	 *
+	 * @returns {ObjectSchema}
+	 */
+	intersection<A extends Record<string, any>>(
+		props: ObjectSchema<A, boolean>,
+		additional = false,
+	): ObjectSchema<A & T, boolean> {
+		const res = new ObjectSchema<A & T>()
+			.additionalProperties(additional)
+			.copyWith(this as ObjectSchema);
+		const required = [...(props.plain.required || [])];
+		for (const prop of this.plain.required || []) {
+			if (!required.includes(prop)) required.push(prop);
+		}
+		console.log({ pPlain: props.plain });
+		return res.copyWith({
+			plain: {
+				properties: {
+					...this.plain.properties,
+					...props.plain.properties,
+				},
+				...(required.length > 0 && {
+					required,
+				}),
+			},
+		});
+	}
+
+	/**
+	 * Intersections ObjectSchema with Object (like shape)
+	 * Return new ObjectSchema with combined fields.
+	 * The new props take precedence for similar properties.
+	 *
+	 * @returns {ObjectSchema}
+	 */
+	intersectionShape<X extends Record<string, BaseSchema<any, boolean>>>(
+		props: X,
+		additional = false,
+	) {
+		let res = new ObjectSchema<
+			Optional<{ [Y in keyof X]: X[Y]["otype"] }> & T
+		>()
+			.additionalProperties(additional)
+			.copyWith(this as ObjectSchema);
+		for (const name in props) {
+			const schema = props[name];
+			const { required = [] } = this.plain;
+			res = res.copyWith({
+				plain: {
+					properties: {
+						...this.plain.properties,
+						[name]: schema.plain,
+					},
+					...(schema.isRequired &&
+						!required.includes(name) && {
+							required: [...required, name],
+						}),
+				},
+			});
+		}
+		return res;
+	}
 }
