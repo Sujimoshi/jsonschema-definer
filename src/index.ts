@@ -144,3 +144,4 @@ export class SchemaFactory extends BaseSchema {
 const S = new SchemaFactory()
 
 export default S
+module.exports = S
